@@ -20,6 +20,9 @@ body {
   font-family: 'Source Sans Pro', sans-serif;
   color: white;
   font-weight: 300;
+  margin: 0; 
+  height: 100%; 
+  overflow: hidden
 }
 body ::-webkit-input-placeholder {
   /* WebKit browsers */

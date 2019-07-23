@@ -2,7 +2,7 @@ import React from 'react';
 import { UserSession, AppConfig } from 'blockstack';
 import './App.css';
 import logo from './white-logo.png';
-const { login, createUserAccount } = require('simpleid-js-sdk');
+import { login, createUserAccount } from 'simpleid-js-sdk';
 const appObj = { appOrigin: "http://localhost:3000", scopes: ['store_write', 'publish_data']}
 class App extends React.Component {
   constructor(props) {

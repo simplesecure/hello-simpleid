@@ -11,7 +11,7 @@
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
     "request-promise": "^4.2.4",
-    "simpleid-js-sdk": "0.0.5",
+    "simpleid-js-sdk": "0.0.9",
     "universal-cookie": "^4.0.2"
   },
   "scripts": {

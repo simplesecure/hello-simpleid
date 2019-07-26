@@ -28,16 +28,12 @@ class App extends React.Component {
   }
   loginForm = () => {
     this.setState({ activeClass: "signin" });
-    //document.getElementById('log-in-button').style.display = "none";
-    //document.getElementById('sign-up-button').style.display = "block";
     document.getElementById('log-in').style.display = "block";
     document.getElementById('sign-up').style.display = "none";
   }
   
   signupForm = () => {
     this.setState({ activeClass: "signup" });
-    //document.getElementById('log-in-button').style.display = "block";
-    //document.getElementById('sign-up-button').style.display = "none";
     document.getElementById('log-in').style.display = "none";
     document.getElementById('sign-up').style.display = "block";
   }

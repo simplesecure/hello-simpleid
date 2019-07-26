@@ -282,6 +282,10 @@ footer img {
   margin-bottom: 25px;
 }
 
+#name-error {
+  color: red;
+}
+
 @-webkit-keyframes square {
   0% {
     -webkit-transform: translateY(0);

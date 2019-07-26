@@ -44,6 +44,7 @@ class App extends React.Component {
   
   handleSignUp = async (e) => {
     e.preventDefault();
+    document.getElementById('name-error').style.display = "none";
     this.setState({ pending: true });
     const credObj = {
       id: document.getElementById('username-input-sign-up').value,
@@ -52,25 +53,32 @@ class App extends React.Component {
       hubUrl: "https://hub.blockstack.org"
     }
     const signup = await createUserAccount(credObj, appObj)
-    localStorage.setItem('blockstack-session', JSON.stringify(signup.body.body.store.sessionData));
-    if(signup.message === "Need to go through recovery flow") {
-      document.getElementById('log-in-recovery').style.display = "block";
-    } else if(signup.message === "successfully created user session") {
-      this.setState({ userSession: signup.body.body, signedin: true, pending: false });
-    } else {
+    if(signup.message === "name taken") {
       this.setState({ pending: false });
-      document.getElementById('growl').style.display = "block";
-      document.getElementById('growl-p').innerText = "Trouble signing up";
-      setTimeout(() => {
-        document.getElementById('growl').style.display = "none";
-        document.getElementById('growl-p').innerText = "";
-      }, 2000)
-      console.log(signup);
+      await this.signupForm();
+      document.getElementById('name-error').style.display = "block";
+    } else {
+      localStorage.setItem('blockstack-session', JSON.stringify(signup.body.body.store.sessionData));
+      if(signup.message === "Need to go through recovery flow") {
+        document.getElementById('log-in-recovery').style.display = "block";
+      } else if(signup.message === "successfully created user session") {
+        this.setState({ userSession: signup.body.body, signedin: true, pending: false });
+      } else {
+        this.setState({ pending: false });
+        document.getElementById('growl').style.display = "block";
+        document.getElementById('growl-p').innerText = "Trouble signing up";
+        setTimeout(() => {
+          document.getElementById('growl').style.display = "none";
+          document.getElementById('growl-p').innerText = "";
+        }, 2000)
+        console.log(signup);
+      }
     }
   }
   
   handleLogIn = async(e) => {
     e.preventDefault();
+    document.getElementById('name-error').style.display = "none";
     this.setState({ pending: true });
     const credObj = {
       id: document.getElementById('username-input').value,
@@ -283,6 +291,7 @@ class App extends React.Component {
                 <h1>Welcome, please sign up</h1>
                 
                 <form className="form">
+                  <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
                   <input id="username-input-sign-up" type="text" placeholder="Username"/>
                   <input id="password-input-sign-up" type="password" placeholder="Password"/>
                   <input id="email-input-sign-up" type="email" placeholder="Email"/>

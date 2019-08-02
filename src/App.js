@@ -4,6 +4,8 @@ import './App.css';
 import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
 const appObj = { appOrigin: window.location.origin, scopes: ['store_write', 'publish_data']}
+const appConfig = new AppConfig(appObj.scopes);
+const userSession = new UserSession({ appConfig });
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -15,17 +17,7 @@ class App extends React.Component {
       pending: false
     }
   }
-  componentDidMount() {
-    const userSessionInStorage = JSON.parse(localStorage.getItem('blockstack-session'));
-    console.log(userSessionInStorage)
-    if(userSessionInStorage) {
-      const appConfig = new AppConfig(appObj.scopes);
-      const userSession = new UserSession({ appConfig });
-      this.setState({ userSession, signedin: true })
-    } else {
-      this.setState({ userSession: {}, signedin: false })
-    }
-  }
+
   loginForm = () => {
     this.setState({ activeClass: "signin" });
     document.getElementById('log-in').style.display = "block";
@@ -192,9 +184,8 @@ class App extends React.Component {
     )
   }
   render() {
-    const { signedin, userSession, activeClass, pending } = this.state;
-    console.log(userSession);
-    if(signedin) {
+    const { activeClass, pending } = this.state;
+    if(userSession.isUserSignedIn()) {
       return (
         <div style={{paddingTop: "100px"}} className="wrapper">
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>

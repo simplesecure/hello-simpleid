@@ -286,6 +286,29 @@ footer img {
   color: red;
 }
 
+#reveal-modal {
+  background: #eee;
+  color: #000;
+  width: 85%;
+  margin: auto;
+  position: fixed;
+  top: 30%;
+  left: 7.5%;
+  padding: 20px;
+  z-index: 999;
+  text-align: center;
+}
+
+#dimmer {
+  width: 100vw;
+  height: 100vh;
+  background: #282828;
+  opacity: 0.8;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
 @-webkit-keyframes square {
   0% {
     -webkit-transform: translateY(0);

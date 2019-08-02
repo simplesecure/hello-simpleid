@@ -2,7 +2,7 @@ import React from 'react';
 import { UserSession, AppConfig } from 'blockstack';
 import './App.css';
 import logo from './white-logo.png';
-import { login, createUserAccount } from 'simpleid-js-sdk';
+import { login, createUserAccount, revealMnemonic } from 'simpleid-js-sdk';
 const appObj = { appOrigin: window.location.origin, scopes: ['store_write', 'publish_data']}
 const appConfig = new AppConfig(appObj.scopes);
 const userSession = new UserSession({ appConfig });
@@ -176,6 +176,26 @@ class App extends React.Component {
     }
   }
 
+  revealSeed = async (e) => {
+    e.preventDefault();
+    const password = document.getElementById('reveal-seed-pass').value;
+    const seed = await revealMnemonic(password);
+    console.log(JSON.parse(seed));
+    document.getElementById('seed-phrase').innerText = JSON.parse(seed).menmonic;
+  }
+
+  closeModal = () => {
+    document.getElementById('reveal-modal').style.display = "none";
+    document.getElementById('dimmer').style.display = "none";
+    document.getElementById('seed-phrase').innerText = "";
+    document.getElementById('reveal-seed-pass').value = "";
+  }
+
+  showModal = () => {
+    document.getElementById('reveal-modal').style.display = "block";
+    document.getElementById('dimmer').style.display = "block";
+  }
+
   renderFooter() {
     return (
       <footer>
@@ -188,7 +208,21 @@ class App extends React.Component {
     if(userSession.isUserSignedIn()) {
       return (
         <div style={{paddingTop: "100px"}} className="wrapper">
+          <div style={{display: "none"}} id="dimmer"></div>
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
+          <div style={{display: "none"}} id="reveal-modal">
+            <span onClick={this.closeModal} style={{fontSize: "30px", cursor: "pointer", position: "absolute", zIndex: "999", right: "15px", top: "15px"}}>&times;</span>
+            <form>
+              <h3>You control your data and your identity</h3>
+              <p style={{marginBottom: "20px"}}>Use your ID in other Blockstack apps with your seed phrase</p>
+              <input style={{backgroundColor: "#282828", color: "#fff"}} placeholder="password" id="reveal-seed-pass" type="password" />
+              <label>Enter your password</label>
+              <div style={{marginTop: "20px"}}>
+                <button style={{color: "#282828"}} onClick={this.revealSeed}>Reveal Recovery Key</button>
+                <div style={{marginTop: "20px"}} id="seed-phrase"></div>
+              </div>
+            </form>
+          </div>
           <div className="container">
             <form className="form">
               <button style={{marginBottom: "25px"}} className="button" onClick={this.signOut}>Sign Out</button>
@@ -210,6 +244,9 @@ class App extends React.Component {
               <div style={{marginTop: "20px"}}>
                 <h1>{this.state.content}</h1>
               </div>
+            </div>
+            <div style={{position: "relative", zIndex: "999"}}>
+              <p style={{cursor: "pointer", textDecoration: "underline"}} onClick={this.showModal}>Reveal Blockstack ID Seed Phrase</p>
             </div>
             {this.renderFooter()}
           </div>

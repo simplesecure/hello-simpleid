@@ -2,7 +2,7 @@ import React from 'react';
 import { UserSession, AppConfig } from 'blockstack';
 import './App.css';
 import logo from './white-logo.png';
-import { login, createUserAccount, revealMnemonic } from 'simpleid-js-sdk';
+import { login, createUserAccount } from 'simpleid-js-sdk';
 const appObj = { appOrigin: window.location.origin, scopes: ['store_write', 'publish_data']}
 const appConfig = new AppConfig(appObj.scopes);
 const userSession = new UserSession({ appConfig });
@@ -46,11 +46,11 @@ class App extends React.Component {
       await this.signupForm();
       document.getElementById('name-error').style.display = "block";
     } else {
-      localStorage.setItem('blockstack-session', JSON.stringify(signup.body.body.store.sessionData));
+      localStorage.setItem('blockstack-session', JSON.stringify(signup.body.store.sessionData));
       if(signup.message === "Need to go through recovery flow") {
         document.getElementById('log-in-recovery').style.display = "block";
-      } else if(signup.message === "successfully created user session") {
-        this.setState({ userSession: signup.body.body, signedin: true, pending: false });
+      } else if(signup.message === "user session created") {
+        this.setState({ userSession: signup.body, signedin: true, pending: false });
       } else {
         this.setState({ pending: false });
         document.getElementById('growl').style.display = "block";
@@ -71,11 +71,9 @@ class App extends React.Component {
     const credObj = {
       id: document.getElementById('username-input').value,
       password: document.getElementById('password-input').value,
-      hubUrl: "https://hub.blockstack.org", 
-      email: document.getElementById('email-input') ? document.getElementById('email-input').value : null
+      hubUrl: "https://hub.blockstack.org"
     }
     const params = {
-      login: true,
       credObj,
       appObj
     }
@@ -84,7 +82,7 @@ class App extends React.Component {
       this.setState({ pending: false });
       document.getElementById('log-in-recovery').style.display = "block";
     } else if(signin.message === "user session created") {
-      localStorage.setItem('blockstack-session', JSON.stringify(signin.body.body.store.sessionData));
+      localStorage.setItem('blockstack-session', JSON.stringify(signin.body.store.sessionData));
       const appConfig = new AppConfig(appObj.scopes);
       const userSession = new UserSession({ appConfig });
       this.setState({ userSession, signedin: true, pending: false });
@@ -176,26 +174,6 @@ class App extends React.Component {
     }
   }
 
-  revealSeed = async (e) => {
-    e.preventDefault();
-    const password = document.getElementById('reveal-seed-pass').value;
-    const seed = await revealMnemonic(password);
-    console.log(JSON.parse(seed));
-    document.getElementById('seed-phrase').innerText = JSON.parse(seed).menmonic;
-  }
-
-  closeModal = () => {
-    document.getElementById('reveal-modal').style.display = "none";
-    document.getElementById('dimmer').style.display = "none";
-    document.getElementById('seed-phrase').innerText = "";
-    document.getElementById('reveal-seed-pass').value = "";
-  }
-
-  showModal = () => {
-    document.getElementById('reveal-modal').style.display = "block";
-    document.getElementById('dimmer').style.display = "block";
-  }
-
   renderFooter() {
     return (
       <footer>
@@ -244,9 +222,6 @@ class App extends React.Component {
               <div style={{marginTop: "20px"}}>
                 <h1>{this.state.content}</h1>
               </div>
-            </div>
-            <div style={{position: "relative", zIndex: "999"}}>
-              <p style={{cursor: "pointer", textDecoration: "underline"}} onClick={this.showModal}>Reveal Blockstack ID Seed Phrase</p>
             </div>
             {this.renderFooter()}
           </div>

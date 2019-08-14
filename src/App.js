@@ -3,7 +3,13 @@ import { UserSession, AppConfig } from 'blockstack';
 import './App.css';
 import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
-const appObj = { appOrigin: window.location.origin, scopes: ['store_write', 'publish_data']}
+const appObj = { 
+  appOrigin: window.location.origin, 
+  scopes: ['store_write', 'publish_data'], 
+  apiKey: "-LmCb96-TquOlN37LpM0", 
+  devId: "imanewdeveloper", 
+  development: true
+}
 const appConfig = new AppConfig(appObj.scopes);
 const userSession = new UserSession({ appConfig });
 class App extends React.Component {

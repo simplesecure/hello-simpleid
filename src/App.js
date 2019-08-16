@@ -6,7 +6,7 @@ import { login, createUserAccount } from 'simpleid-js-sdk';
 const appObj = { 
   appOrigin: window.location.origin, 
   scopes: ['store_write', 'publish_data'], 
-  // apiKey: "-LmCb96-TquOlN37LpM0", 
+  apiKey: "-LmCb96-TquOlN37LpM0", 
   devId: "imanewdeveloper", 
   development: true
 }

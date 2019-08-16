@@ -3,6 +3,8 @@ import { UserSession, AppConfig } from 'blockstack';
 import './App.css';
 import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
+import signupButton from './hellosignup.png';
+import signinButton from './hellosignIn.png';
 const appObj = { 
   appOrigin: window.location.origin, 
   scopes: ['store_write', 'publish_data'], 
@@ -47,6 +49,7 @@ class App extends React.Component {
       hubUrl: "https://hub.blockstack.org"
     }
     const signup = await createUserAccount(credObj, appObj)
+    console.log(signup);
     if(signup.message === "name taken") {
       this.setState({ pending: false });
       await this.signupForm();
@@ -288,7 +291,7 @@ class App extends React.Component {
                     <h4>Looks like this is a new device or it's been a while since you logged in. You'll have to enter your email address as well to log in.</h4>
                     <input style={{marginTop: "15px"}} id="email-input" type="email" placeholder="Email"/>
                   </div>
-                  <button onClick={this.handleLogIn} type="submit" id="login-button">Sign In</button>
+                  <button onClick={this.handleLogIn} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signinButton} alt="login" /></button>
                 </form>
               </div>
 
@@ -300,7 +303,7 @@ class App extends React.Component {
                   <input id="username-input-sign-up" type="text" placeholder="Username"/>
                   <input id="password-input-sign-up" type="password" placeholder="Password"/>
                   <input id="email-input-sign-up" type="email" placeholder="Email"/>
-                  <button onClick={this.handleSignUp} type="submit" id="login-button">Sign Up</button>
+                  <button onClick={this.handleSignUp} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
                 </form>
               </div>
               {this.renderFooter()}

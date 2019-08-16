@@ -309,6 +309,18 @@ footer img {
   top: 0;
 }
 
+.auth-button {
+  max-width: 200px;
+  margin: auto;
+  border-radius: 5px;
+}
+
+.link-button, .link-button:hover {
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
 @-webkit-keyframes square {
   0% {
     -webkit-transform: translateY(0);

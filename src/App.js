@@ -4,7 +4,7 @@ import './App.css';
 import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
 import signupButton from './hellosignup.png';
-import signinButton from './hellosignIn.png';
+import signinButton from './hellosignin.png';
 const appObj = { 
   appOrigin: window.location.origin, 
   scopes: ['store_write', 'publish_data'], 

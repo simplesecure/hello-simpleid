@@ -71,10 +71,10 @@ export default class EthereumPage extends React.Component {
       const params = {
         username: userSession.loadUserData().username,
         password,
-        devId: simpleIDKeys().devId, 
-        apiKey: simpleIDKeys().apiKey, 
-        abi, 
-        bytecode 
+        devId: simpleIDKeys().devId,
+        apiKey: simpleIDKeys().apiKey,
+        abi,
+        bytecode
       }
       document.getElementById('growl').style.display = "block";
       document.getElementById('growl-p').innerText = "Deploying contract...";
@@ -100,9 +100,9 @@ export default class EthereumPage extends React.Component {
     e.preventDefault();
     const params = {
       contractAddress: "0x4f7DE17889C29c9F2482B017d467a481cE3376C0",
-      devId: simpleIDKeys().devId, 
-      apiKey: simpleIDKeys().apiKey, 
-      abi, 
+      devId: simpleIDKeys().devId,
+      apiKey: simpleIDKeys().apiKey,
+      abi,
     }
     document.getElementById('growl').style.display = "block";
     document.getElementById('growl-p').innerText = "Fetching contract...";
@@ -121,7 +121,7 @@ export default class EthereumPage extends React.Component {
     }, 2000)
     this.setState({ result: contract.body });
   }
-  
+
   render() {
     const { userSession } = this.props;
     const { result } = this.state;
@@ -135,7 +135,7 @@ export default class EthereumPage extends React.Component {
           <label style={{color: "#809eff"}}>Sample Contract</label>
           <br/>
           <div>
-            <h3 style={{color: "#809eff", marginTop: "25px"}}>Your Ethereum testnet address is <code>{userSession.loadUserData().wallet.ethAddr}</code>.</h3> 
+            <h3 style={{color: "#809eff", marginTop: "25px"}}>Your Ethereum testnet address is <code>{userSession.loadUserData().wallet.ethAddr}</code>.</h3>
             <h3 style={{color: "#809eff", marginTop: "25px"}}>You'll need to use a testnet faucet <a href="https://faucet.ropsten.be/" target="_blank" rel="noopener noreferrer">like this one</a> to fund it before you can test the deploy contract function.</h3>
           </div>
           <p style={{color: "#809eff"}}>Enter your password then click "Deploy Contract" when you're ready to deploy it.</p>
@@ -147,7 +147,7 @@ export default class EthereumPage extends React.Component {
           <p id="password-error" style={{ display: "none", color: "red" }}>Please make sure you enter your correct account password.</p>
           <br/>
           <button className="on-white" style={{marginTop: "15px"}} onClick={this.fetchContractFromEth}>Execute Contract</button>
-          
+
         </form>
         <div style={{marginTop: "20px"}}>
           <h3>The result of the executed contract will be displayed below.</h3>

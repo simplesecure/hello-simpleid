@@ -5,12 +5,16 @@ import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
 import signupButton from './hellosignup.png';
 import signinButton from './hellosignin.png';
+import BlockstackPage from './BlockstackPage';
+import EthereumPage from './EthereumPage';
+import PinataPage from './IPFSPage';
+const {simpleIDKeys} = require('./keys');
 const appObj = { 
   appOrigin: window.location.origin, 
   scopes: ['store_write', 'publish_data'], 
-  apiKey: "-LmCb96-TquOlN37LpM0", 
-  devId: "imanewdeveloper", 
-  development: true
+  apiKey: simpleIDKeys().apiKey, 
+  devId: simpleIDKeys().devId, 
+  development: false
 }
 const appConfig = new AppConfig(appObj.scopes);
 const userSession = new UserSession({ appConfig });
@@ -22,7 +26,8 @@ class App extends React.Component {
       signedin: false, 
       content: "",
       activeClass: "signin",
-      pending: false
+      pending: false, 
+      page: "blockstack"
     }
   }
 
@@ -121,118 +126,59 @@ class App extends React.Component {
     window.location.reload();
   }
 
-  saveContent = (e) => {
-    e.preventDefault();
-    const { userSession } = this.state;
-    const content = document.getElementById('content-input').value;
-    const title = document.getElementById('title-input').value;
-    document.getElementById('growl').style.display = "block";
-    document.getElementById('growl-p').innerText = "Saving file...";
-    if(title && content) {
-      userSession.putFile(`${title}.json`, content, {encrypt: false})
-        .then((res) => {
-          console.log(res);
-          document.getElementById('growl').style.display = "block";
-          document.getElementById('growl-p').innerText = "File saved!";
-          setTimeout(() => {
-            document.getElementById('growl').style.display = "none";
-            document.getElementById('growl-p').innerText = "";
-          }, 2000)
-        }).catch((err) => {
-          console.log(err)
-          document.getElementById('growl').style.display = "block";
-          document.getElementById('growl-p').innerText = "Trouble saving";
-          setTimeout(() => {
-            document.getElementById('growl').style.display = "none";
-            document.getElementById('growl-p').innerText = "";
-          }, 2000)
-        });
-    }
-  }
-
-  fetchContent = (e) => {
-    e.preventDefault();
-    document.getElementById('growl').style.display = "block";
-    document.getElementById('growl-p').innerText = "Fetching content...";
-    const { userSession } = this.state;
-    const title = document.getElementById('title-input').value;
-    if(title) {
-      userSession.getFile(`${title}.json`, {decrypt: false})
-        .then((res) => {
-          this.setState({ content: res });
-          if(res) {
-            document.getElementById('growl').style.display = "none";
-            document.getElementById('growl-p').innerText = "";
-          } else {
-            document.getElementById('growl').style.display = "block";
-            document.getElementById('growl-p').innerText = "No file found";
-            setTimeout(() => {
-              document.getElementById('growl').style.display = "none";
-              document.getElementById('growl-p').innerText = "";
-            }, 2000)
-          }
-        }).catch((err) => {
-          console.log(err);
-          document.getElementById('growl').style.display = "block";
-          document.getElementById('growl-p').innerText = "Trouble saving";
-          setTimeout(() => {
-            document.getElementById('growl').style.display = "none";
-            document.getElementById('growl-p').innerText = "";
-          }, 2000)
-        })
-    }
-  }
-
   renderFooter() {
     return (
-      <footer>
+      <footer className="footer">
         <img src={logo} alt="simpleid" />
       </footer>
     )
   }
   render() {
-    const { activeClass, pending } = this.state;
+    console.log(simpleIDKeys());
+    const { activeClass, pending, content, page } = this.state;
+    const activeTab = {
+      background: "#fff", 
+      color: "#809eff"
+    };
+    const inactiveTab = {
+      background: "#809eff", 
+      color: "#fff"
+    }
     if(userSession.isUserSignedIn()) {
       return (
         <div style={{paddingTop: "100px"}} className="wrapper">
           <div style={{display: "none"}} id="dimmer"></div>
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
-          <div style={{display: "none"}} id="reveal-modal">
-            <span onClick={this.closeModal} style={{fontSize: "30px", cursor: "pointer", position: "absolute", zIndex: "999", right: "15px", top: "15px"}}>&times;</span>
-            <form>
-              <h3>You control your data and your identity</h3>
-              <p style={{marginBottom: "20px"}}>Use your ID in other Blockstack apps with your seed phrase</p>
-              <input style={{backgroundColor: "#282828", color: "#fff"}} placeholder="password" id="reveal-seed-pass" type="password" />
-              <label>Enter your password</label>
-              <div style={{marginTop: "20px"}}>
-                <button style={{color: "#282828"}} onClick={this.revealSeed}>Reveal Recovery Key</button>
-                <div style={{marginTop: "20px"}} id="seed-phrase"></div>
-              </div>
-            </form>
-          </div>
           <div className="container">
-            <form className="form">
-              <button style={{marginBottom: "25px"}} className="button" onClick={this.signOut}>Sign Out</button>
-              <h1 style={{marginBottom: "15px"}}>Hello, {userSession.loadUserData().username}</h1>
-              <h2 style={{marginBottom: "15px"}}>Test storing some content</h2>
-              <input type="text" id="title-input" />
-              <label>File name</label>
-              <br/>
-              <input style={{marginTop: "10px"}} type="text" id="content-input" />
-              <label>Type some content to save</label>
-              <br/>
-              <button style={{marginTop: "15px"}} onClick={this.saveContent}>Store content</button>
-              <br/>
-              <button style={{marginTop: "15px"}} onClick={this.fetchContent}>Fetch content</button>
-              
-            </form>
-            <div style={{marginTop: "20px"}}>
-              <h3>Your stored content will appear below when fetched</h3>
-              <div style={{marginTop: "20px"}}>
-                <h1>{this.state.content}</h1>
-              </div>
-            </div>
-            {this.renderFooter()}
+          <div className="tabs">
+            <ul style={{position: "relative", zIndex: "999"}}>
+              <li style={page === "blockstack" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "blockstack" })}>Blockstack Example</li>
+              <li style={page === "ethereum" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereum" })}>Ethereum Example</li>
+              <li style={page === "ipfs" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ipfs" })}>IPFS Example</li>
+            </ul>
+          </div>
+          <div className="card">
+            {
+              page === "blockstack" ? 
+              <BlockstackPage 
+                userSession={userSession}
+                content={content}
+                signOut={this.signOut}
+              /> : 
+              page === 'ethereum' ? 
+              <EthereumPage 
+                userSession={userSession}
+                signOut={this.signOut}
+              /> : 
+              page === "ipfs" ? 
+              <PinataPage 
+                userSession={userSession}
+                signOut={this.signOut}
+              /> : 
+              <div />
+            }
+          </div>
+          {this.renderFooter()}
           </div>
           <ul className="bg-bubbles">
               <li></li>
@@ -286,7 +232,9 @@ class App extends React.Component {
                 
                 <form className="form">
                   <input id="username-input" type="text" placeholder="Username"/>
+                  <label style={{color: "#fff"}}>Username</label>
                   <input id="password-input" type="password" placeholder="Password"/>
+                  <label style={{color: "#fff"}}>Password</label><br/>
                   <div style={{display: "none", margin: "15px", fontWeight: "600"}} id="log-in-recovery">
                     <h4>Looks like this is a new device or it's been a while since you logged in. You'll have to enter your email address as well to log in.</h4>
                     <input style={{marginTop: "15px"}} id="email-input" type="email" placeholder="Email"/>
@@ -301,8 +249,11 @@ class App extends React.Component {
                 <form className="form">
                   <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
                   <input id="username-input-sign-up" type="text" placeholder="Username"/>
+                  <label style={{color: "#fff"}}>Username</label>
                   <input id="password-input-sign-up" type="password" placeholder="Password"/>
+                  <label style={{color: "#fff"}}>Password</label>
                   <input id="email-input-sign-up" type="email" placeholder="Email"/>
+                  <label style={{color: "#fff"}}>Email</label><br/>
                   <button onClick={this.handleSignUp} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
                 </form>
               </div>

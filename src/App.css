@@ -79,6 +79,15 @@ body :-ms-input-placeholder {
   transition-timing-function: ease-in-put;
   font-weight: 200;
 }
+textarea {
+  width: 85%;
+  margin: auto;
+  border-radius: 5px;
+  padding: 15px;
+  resize: none;
+  height: 200px;
+}
+
 form {
   padding: 20px 0;
   position: relative;
@@ -89,8 +98,7 @@ form input {
      -moz-appearance: none;
           appearance: none;
   outline: 0;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid #809eff;
   width: 250px;
   border-radius: 3px;
   padding: 10px 15px;
@@ -98,17 +106,16 @@ form input {
   display: block;
   text-align: center;
   font-size: 18px;
-  color: white;
+  color: #809eff!important;
   transition-duration: 0.25s;
   font-weight: 300;
+  margin-top: 25px;
 }
 form input:hover {
-  background-color: rgba(255, 255, 255, 0.4);
+  color: #809eff!important;
 }
 form input:focus {
-  background-color: white;
-  width: 300px;
-  color: #003dff;
+  color: #809eff!important;
 }
 form button {
   -webkit-appearance: none;
@@ -246,6 +253,22 @@ form button:hover {
   transition-duration: 0.25s;
 }
 
+.on-white {
+  -webkit-appearance: none!important;
+  -moz-appearance: none!important;
+  appearance: none!important;
+  outline: 0!important;
+  background-color: #809eff!important;
+  border: 0;
+  padding: 10px 15px;
+  color: #fff!important;
+  border-radius: 3px;
+  width: 250px;
+  cursor: pointer;
+  font-size: 18px;
+  transition-duration: 0.25s;
+}
+
 .active {
   border-bottom: 2px #fff solid;
 }
@@ -274,7 +297,7 @@ footer {
   width: 100%;
   bottom: 0;
   text-align: center;
-  margin-top: 70px;
+  margin-top: 200px;
 }
 footer img {
   max-width: 25%;
@@ -319,6 +342,34 @@ footer img {
   background: none;
   border: none;
   box-shadow: none;
+}
+
+.tabs ul li { 
+  display: inline-block; 
+  margin: 0 5px;  
+  text-decoration: none; 
+  color: #fff; 
+  padding: 8px 15px; 
+  border-radius: 5px 5px 0 0; 
+  background: #2da4ac; 
+  font-weight: bold; 
+  cursor: pointer
+}
+
+.tabs ul li:hover, 
+.tabs ul li.is-selected { background: #74d4f8; 
+ transition: 2s ease; 
+ cursor: pointer;
+}
+.tabs ul li.is-disabled {
+  pointer-events: none;
+  background: rgba(gray, 0.2); 
+}
+
+.card {
+  padding: 20px;
+  background: #fff;
+  border-radius: 5px;
 }
 
 @-webkit-keyframes square {

@@ -273,6 +273,19 @@ form button:hover {
   border-bottom: 2px #fff solid;
 }
 
+#banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  height: 75px;
+  background: #e6e600;
+  padding-top: 30px;
+  color: #000;
+  z-index: 999;
+}
+
 #growl {
   width: 200px;
   height: 75px;

@@ -7,6 +7,7 @@ import signupButton from './hellosignup.png';
 import signinButton from './hellosignin.png';
 import BlockstackPage from './BlockstackPage';
 import EthereumPage from './EthereumPage';
+import Banner from './Banner';
 import PinataPage from './IPFSPage';
 const {simpleIDKeys} = require('./keys');
 const appObj = { 
@@ -25,7 +26,7 @@ class App extends React.Component {
       userSession: {}, 
       signedin: false, 
       content: "",
-      activeClass: "signin",
+      activeClass: "signup",
       pending: false, 
       page: "blockstack"
     }
@@ -147,6 +148,7 @@ class App extends React.Component {
     if(userSession.isUserSignedIn()) {
       return (
         <div style={{paddingTop: "100px"}} className="wrapper">
+          <Banner />
           <div style={{display: "none"}} id="dimmer"></div>
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
           <div className="container">
@@ -222,12 +224,13 @@ class App extends React.Component {
       return (
         <div>
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
+          <Banner />
           <div className="wrapper">
                 <ul className="options" style={{listStyle: "none"}}>
-                  <li style={{display: "inline", cursor: "pointer"}} onClick={this.loginForm} className={activeClass === "signin" ? "active" : ""}>Sign In</li>
-                  <li style={{display: "inline", cursor: "pointer"}} onClick={this.signupForm} className={activeClass === "signup" ? "active" : ""}>Sign Up</li>
+                <li style={{display: "inline", cursor: "pointer"}} onClick={this.signupForm} className={activeClass === "signup" ? "active" : ""}>Sign Up</li>
+                  <li style={{display: "inline", cursor: "pointer"}} onClick={this.loginForm} className={activeClass === "signin" ? "active" : ""}>Sign In</li>                  
                 </ul>
-              <div id="log-in" className="container">
+              <div style={{display: "none"}} id="log-in" className="container">
                 <h1>Welcome, please sign in</h1>
                 
                 <form className="form">
@@ -243,7 +246,7 @@ class App extends React.Component {
                 </form>
               </div>
 
-              <div style={{display: "none"}} id="sign-up" className="container">
+              <div id="sign-up" className="container">
                 <h1>Welcome, please sign up</h1>
                 
                 <form className="form">

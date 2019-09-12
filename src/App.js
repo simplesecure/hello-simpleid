@@ -4,17 +4,17 @@ import './App.css';
 import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
 import signupButton from './hellosignup.png';
-import signinButton from './hellosignin.png';
+import signinButton from './hellosignIn.png';
 import BlockstackPage from './BlockstackPage';
 import EthereumPage from './EthereumPage';
 import Banner from './Banner';
 import PinataPage from './IPFSPage';
 const {simpleIDKeys} = require('./keys');
-const appObj = { 
-  appOrigin: window.location.origin, 
-  scopes: ['store_write', 'publish_data'], 
-  apiKey: simpleIDKeys().apiKey, 
-  devId: simpleIDKeys().devId, 
+const appObj = {
+  appOrigin: window.location.origin,
+  scopes: ['store_write', 'publish_data'],
+  apiKey: simpleIDKeys().apiKey,
+  devId: simpleIDKeys().devId,
   development: false
 }
 const appConfig = new AppConfig(appObj.scopes);
@@ -23,11 +23,11 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userSession: {}, 
-      signedin: false, 
+      userSession: {},
+      signedin: false,
       content: "",
       activeClass: "signup",
-      pending: false, 
+      pending: false,
       page: "blockstack"
     }
   }
@@ -37,13 +37,13 @@ class App extends React.Component {
     document.getElementById('log-in').style.display = "block";
     document.getElementById('sign-up').style.display = "none";
   }
-  
+
   signupForm = () => {
     this.setState({ activeClass: "signup" });
     document.getElementById('log-in').style.display = "none";
     document.getElementById('sign-up').style.display = "block";
   }
-  
+
   handleSignUp = async (e) => {
     e.preventDefault();
     document.getElementById('name-error').style.display = "none";
@@ -78,7 +78,7 @@ class App extends React.Component {
       }
     }
   }
-  
+
   handleLogIn = async(e) => {
     e.preventDefault();
     document.getElementById('name-error').style.display = "none";
@@ -138,11 +138,11 @@ class App extends React.Component {
     //console.log(simpleIDKeys());
     const { activeClass, pending, content, page } = this.state;
     const activeTab = {
-      background: "#fff", 
+      background: "#fff",
       color: "#809eff"
     };
     const inactiveTab = {
-      background: "#809eff", 
+      background: "#809eff",
       color: "#fff"
     }
     if(userSession.isUserSignedIn()) {
@@ -161,22 +161,22 @@ class App extends React.Component {
           </div>
           <div className="card">
             {
-              page === "blockstack" ? 
-              <BlockstackPage 
+              page === "blockstack" ?
+              <BlockstackPage
                 userSession={userSession}
                 content={content}
                 signOut={this.signOut}
-              /> : 
-              page === 'ethereum' ? 
-              <EthereumPage 
+              /> :
+              page === 'ethereum' ?
+              <EthereumPage
                 userSession={userSession}
                 signOut={this.signOut}
-              /> : 
-              page === "ipfs" ? 
-              <PinataPage 
+              /> :
+              page === "ipfs" ?
+              <PinataPage
                 userSession={userSession}
                 signOut={this.signOut}
-              /> : 
+              /> :
               <div />
             }
           </div>
@@ -228,11 +228,11 @@ class App extends React.Component {
           <div className="wrapper">
                 <ul className="options" style={{listStyle: "none"}}>
                 <li style={{display: "inline", cursor: "pointer"}} onClick={this.signupForm} className={activeClass === "signup" ? "active" : ""}>Sign Up</li>
-                  <li style={{display: "inline", cursor: "pointer"}} onClick={this.loginForm} className={activeClass === "signin" ? "active" : ""}>Sign In</li>                  
+                  <li style={{display: "inline", cursor: "pointer"}} onClick={this.loginForm} className={activeClass === "signin" ? "active" : ""}>Sign In</li>
                 </ul>
               <div style={{display: "none"}} id="log-in" className="container">
                 <h1>Welcome, please sign in</h1>
-                
+
                 <form className="form">
                   <input id="username-input" type="text" placeholder="Username"/>
                   <label style={{color: "#fff"}}>Username</label>
@@ -248,7 +248,7 @@ class App extends React.Component {
 
               <div id="sign-up" className="container">
                 <h1>Welcome, please sign up</h1>
-                
+
                 <form className="form">
                   <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
                   <input id="username-input-sign-up" type="text" placeholder="Username"/>
@@ -262,7 +262,7 @@ class App extends React.Component {
               </div>
               {this.renderFooter()}
             </div>
-            
+
             <ul className="bg-bubbles">
               <li></li>
               <li></li>
@@ -275,7 +275,7 @@ class App extends React.Component {
               <li></li>
               <li></li>
             </ul>
-            
+
           </div>
       );
     }

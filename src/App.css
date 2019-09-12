@@ -20,36 +20,55 @@ body {
   font-family: 'Source Sans Pro', sans-serif;
   color: white;
   font-weight: 300;
-  margin: 0; 
-  height: 100%; 
+  margin: 0;
+  height: 100%;
   overflow: hidden
 }
 body ::-webkit-input-placeholder {
   /* WebKit browsers */
   font-family: 'Source Sans Pro', sans-serif;
-  color: white;
+  color: darkgray;
   font-weight: 300;
 }
 body :-moz-placeholder {
   /* Mozilla Firefox 4 to 18 */
   font-family: 'Source Sans Pro', sans-serif;
-  color: white;
+  color: darkgray;
   opacity: 1;
   font-weight: 300;
 }
 body ::-moz-placeholder {
   /* Mozilla Firefox 19+ */
   font-family: 'Source Sans Pro', sans-serif;
-  color: white;
+  color: darkgray;
   opacity: 1;
   font-weight: 300;
 }
 body :-ms-input-placeholder {
   /* Internet Explorer 10+ */
   font-family: 'Source Sans Pro', sans-serif;
-  color: white;
+  color: darkgray;
   font-weight: 300;
 }
+/* AC */
+.formContainer {
+  max-width: 400px;
+  min-width: 400px;
+  margin: 0 auto;
+  background: white;
+  color: black;
+  min-height: 500px;
+  border-color: lightblue;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 15px;
+  padding-top: 35px;
+  padding-bottom: 35px;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: 'center';
+}
+/* End AC */
 .wrapper {
   background: #50a3a2;
   background: linear-gradient(to bottom right, #003dff 0%, #c0cfff 100%);
@@ -74,7 +93,7 @@ body :-ms-input-placeholder {
   text-align: center;
 }
 .container h1 {
-  font-size: 40px;
+  font-size: 32px;
   transition-duration: 1s;
   transition-timing-function: ease-in-put;
   font-weight: 200;
@@ -227,7 +246,7 @@ form button:hover {
 
 .options {
   position: absolute;
-  top: 200px;
+  top: 160px;
   width: 100%;
   z-index: 999;
   text-align: center;
@@ -237,7 +256,7 @@ form button:hover {
   margin: 10px;
 }
 
-.button { 
+.button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -357,26 +376,26 @@ footer img {
   box-shadow: none;
 }
 
-.tabs ul li { 
-  display: inline-block; 
-  margin: 0 5px;  
-  text-decoration: none; 
-  color: #fff; 
-  padding: 8px 15px; 
-  border-radius: 5px 5px 0 0; 
-  background: #2da4ac; 
-  font-weight: bold; 
+.tabs ul li {
+  display: inline-block;
+  margin: 0 5px;
+  text-decoration: none;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 5px 5px 0 0;
+  background: #2da4ac;
+  font-weight: bold;
   cursor: pointer
 }
 
-.tabs ul li:hover, 
-.tabs ul li.is-selected { background: #74d4f8; 
- transition: 2s ease; 
+.tabs ul li:hover,
+.tabs ul li.is-selected { background: #74d4f8;
+ transition: 2s ease;
  cursor: pointer;
 }
 .tabs ul li.is-disabled {
   pointer-events: none;
-  background: rgba(gray, 0.2); 
+  background: rgba(gray, 0.2);
 }
 
 .card {

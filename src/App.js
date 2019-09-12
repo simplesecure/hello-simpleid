@@ -9,6 +9,7 @@ import BlockstackPage from './BlockstackPage';
 import EthereumPage from './EthereumPage';
 import Banner from './Banner';
 import PinataPage from './IPFSPage';
+import BarLoader from 'react-spinners/BarLoader';
 const {simpleIDKeys} = require('./keys');
 const appObj = {
   appOrigin: window.location.origin,
@@ -28,7 +29,8 @@ class App extends React.Component {
       content: "",
       activeClass: "signup",
       pending: false,
-      page: "blockstack"
+      page: "blockstack",
+      loadingMessage: "",
     }
   }
 
@@ -36,25 +38,46 @@ class App extends React.Component {
     this.setState({ activeClass: "signin" });
     document.getElementById('log-in').style.display = "block";
     document.getElementById('sign-up').style.display = "none";
+    document.getElementById('error-sign-in-fields').style.display = "none";
   }
 
   signupForm = () => {
     this.setState({ activeClass: "signup" });
     document.getElementById('log-in').style.display = "none";
     document.getElementById('sign-up').style.display = "block";
+    document.getElementById('error-sign-up-fields').style.display = "none";
   }
+
+  statusCallbackFn = (aStatusMessage) => {
+    this.setState( { pending:true, loadingMessage:aStatusMessage } )
+  }
+
 
   handleSignUp = async (e) => {
     e.preventDefault();
     document.getElementById('name-error').style.display = "none";
-    this.setState({ pending: true });
+    document.getElementById('error-sign-up-fields').style.display = "none";
+
     const credObj = {
       id: document.getElementById('username-input-sign-up').value,
       password: document.getElementById('password-input-sign-up').value,
       email: document.getElementById('email-input-sign-up').value,
       hubUrl: "https://hub.blockstack.org"
     }
-    const signup = await createUserAccount(credObj, appObj)
+
+    // Error check
+    let error = false
+    if (!credObj.id) {
+      document.getElementById('error-sign-up-fields').style.display = "block";
+      error = true
+    }
+    if (error) {
+      return
+    }
+
+    this.setState({ pending: true });
+
+    const signup = await createUserAccount(credObj, appObj, { statusCallbackFn: this.statusCallbackFn })
     console.log(signup);
     if(signup.message === "name taken") {
       this.setState({ pending: false });
@@ -82,12 +105,25 @@ class App extends React.Component {
   handleLogIn = async(e) => {
     e.preventDefault();
     document.getElementById('name-error').style.display = "none";
-    this.setState({ pending: true });
+    document.getElementById('error-sign-in-fields').style.display = "none";
+
     const credObj = {
       id: document.getElementById('username-input').value,
       password: document.getElementById('password-input').value,
       hubUrl: "https://hub.blockstack.org"
     }
+
+    // Error check
+    let error = false
+    if (!credObj.id) {
+      document.getElementById('error-sign-in-fields').style.display = "block";
+      error = true
+    }
+    if (error) {
+      return
+    }
+    this.setState({ pending: true });
+
     const params = {
       credObj,
       appObj
@@ -134,9 +170,11 @@ class App extends React.Component {
       </footer>
     )
   }
+
   render() {
     //console.log(simpleIDKeys());
-    const { activeClass, pending, content, page } = this.state;
+    let { activeClass, pending, content, page, loadingMessage } = this.state;
+
     const activeTab = {
       background: "#fff",
       color: "#809eff"
@@ -203,6 +241,16 @@ class App extends React.Component {
           <div className="wrapper">
             <div className="container">
               <h1>Just a moment...</h1>
+              <h2 style={{fontStyle:'italic'}}>{loadingMessage}</h2>
+              <div style={{display:"inline-block", margin:"auto"}}>
+                <BarLoader
+                  sizeUnit={"px"}
+                  height={5}
+                  width={100}
+                  color={'white'}
+                  loading={pending}
+                />
+              </div>
             </div>
             <ul className="bg-bubbles">
               <li></li>
@@ -226,38 +274,35 @@ class App extends React.Component {
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
           <Banner />
           <div className="wrapper">
-                <ul className="options" style={{listStyle: "none"}}>
+              <ul className="options" style={{listStyle: "none"}}>
                 <li style={{display: "inline", cursor: "pointer"}} onClick={this.signupForm} className={activeClass === "signup" ? "active" : ""}>Sign Up</li>
-                  <li style={{display: "inline", cursor: "pointer"}} onClick={this.loginForm} className={activeClass === "signin" ? "active" : ""}>Sign In</li>
-                </ul>
-              <div style={{display: "none"}} id="log-in" className="container">
-                <h1>Welcome, please sign in</h1>
+                <li style={{display: "inline", cursor: "pointer"}} onClick={this.loginForm} className={activeClass === "signin" ? "active" : ""}>Sign In</li>
+              </ul>
+              <div style={{display: "none"}} id="log-in" className="formContainer">
+                <h1 style={{textAlign: 'center'}}>Welcome, please sign in</h1>
 
                 <form className="form">
+                  <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-in-fields">Please fill in all fields:</span>
                   <input id="username-input" type="text" placeholder="Username"/>
-                  <label style={{color: "#fff"}}>Username</label>
                   <input id="password-input" type="password" placeholder="Password"/>
-                  <label style={{color: "#fff"}}>Password</label><br/>
                   <div style={{display: "none", margin: "15px", fontWeight: "600"}} id="log-in-recovery">
                     <h4>Looks like this is a new device or it's been a while since you logged in. You'll have to enter your email address as well to log in.</h4>
                     <input style={{marginTop: "15px"}} id="email-input" type="email" placeholder="Email"/>
                   </div>
-                  <button onClick={this.handleLogIn} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signinButton} alt="login" /></button>
+                  <button onClick={this.handleLogIn} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signinButton} alt="login" /></button>
                 </form>
               </div>
 
-              <div id="sign-up" className="container">
-                <h1>Welcome, please sign up</h1>
+              <div id="sign-up" className="formContainer">
+                <h1 style={{textAlign: 'center'}}>Welcome, please sign up</h1>
 
                 <form className="form">
                   <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
-                  <input id="username-input-sign-up" type="text" placeholder="Username"/>
-                  <label style={{color: "#fff"}}>Username</label>
+                  <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-up-fields">Please fill in all fields:</span>
+                  <input id="username-input-sign-up" type="text" placeholder="Username" />
                   <input id="password-input-sign-up" type="password" placeholder="Password"/>
-                  <label style={{color: "#fff"}}>Password</label>
                   <input id="email-input-sign-up" type="email" placeholder="Email"/>
-                  <label style={{color: "#fff"}}>Email</label><br/>
-                  <button onClick={this.handleSignUp} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
+                  <button onClick={this.handleSignUp} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
                 </form>
               </div>
               {this.renderFooter()}

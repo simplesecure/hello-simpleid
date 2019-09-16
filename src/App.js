@@ -129,6 +129,18 @@ class App extends React.Component {
       appObj
     }
     const signin = await login(params);
+
+    if (signin.message !== 'user session created') {
+      document.getElementById('growl').style.display = "block";
+      document.getElementById('growl-p').innerText = `message: ${signin.message}\nbody: ${signin.body.slice(0,30)}`;
+      this.setState({ pending: false})
+    } else {
+      localStorage.setItem('blockstack-session', JSON.stringify(signin.body.store.sessionData));
+      const appConfig = new AppConfig(appObj.scopes);
+      const userSession = new UserSession({ appConfig });
+      this.setState({ userSession, signedin: true, pending: false });
+    }
+
     if(signin.message === "Need to go through recovery flow") {
       this.setState({ pending: false });
       document.getElementById('log-in-recovery').style.display = "block";

@@ -4,6 +4,7 @@ const request = require('request-promise');
 let bytecode = require('./contracts/TodoList.json').bytecode;
 let abi = require('./contracts/TodoList.json').abi;
 const Web3 = require('web3');
+const {simpleIDKeys} = require('./keys');
 
 let contractAddress = "0xb7916f9D6587441A7af652fD1378E892CA67d331";
 let ropContractAddress = "0x13127a8969099dB949f63a264B02d6F6B3a61081";
@@ -17,7 +18,8 @@ web3.eth.net.isListening()
    .catch(e => console.log('Wow. Something went wrong'));
 let headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
 web3.eth.getAccounts().then(console.log)
-const account1 = "0xe9CF9486ECf63bdA487B64698085A51392f42081"; //Fetch this from the user session object
+//const account1 = "0xe9CF9486ECf63bdA487B64698085A51392f42081"; //Fetch this from the user session object
+let account1; 
 
 export default class EthereumTodoPage extends React.Component {
   constructor(props) {
@@ -35,11 +37,13 @@ export default class EthereumTodoPage extends React.Component {
       yourContractAddress: "",
       customAddress: "",
       contractApproval: false,
-      error: ""
+      error: "", 
+      username: JSON.parse(localStorage.getItem('blockstack-session')).userData.username
     }
   }
 
   componentDidMount() {
+    account1 = JSON.parse(localStorage.getItem('blockstack-session')) ? JSON.parse(localStorage.getItem('blockstack-session')).userData.wallet.ethAddr : "";
     const yourContractAddress = sessionStorage.getItem('your_contract_address') || "";
     this.setState({ yourContractAddress, customAddress: yourContractAddress });
     this.fetchContract();
@@ -94,10 +98,10 @@ export default class EthereumTodoPage extends React.Component {
     this.setState({payload});
     let estimate;
     console.log('deployContract ######### 3')
-    debugger
+    // debugger
     web3.eth.getTransactionCount(account1, async (err, txCount) => {
       try {
-        debugger
+        // debugger
         console.log('deployContract ######### 4')
         // Build the transaction
         const txObject = {
@@ -195,12 +199,16 @@ export default class EthereumTodoPage extends React.Component {
 
   approveTransaction = () => {
     this.setState({ error: "" });
-    const { payload, tasks, password, contractApproval, customAddress } = this.state;
+    const { payload, tasks, contractApproval, customAddress, username, password } = this.state;
     payload.password = password;
+    payload.username = username;
+    payload.devId = process.env.NODE_ENV === "production" ? simpleIDKeys().devId : "imanewdeveloper";
+    payload.development = process.env.NODE_ENV === "production" ? false : true;
+    headers['Authorization'] = process.env.NODE_ENV === "production" ? simpleIDKeys().apiKey : "-LmCb96-TquOlN37LpM0";
     if(password) {
       if(contractApproval) {
         this.setState({ loading: true, showGas: false, gas: 0, contractApproval: false });
-        const options = { url: 'http://localhost:5000/v1/createContract', method: 'POST', headers: headers, body: JSON.stringify(payload) };
+        const options = { url: 'https://i7sev8z82g.execute-api.us-west-2.amazonaws.com/dev/createContract', method: 'POST', headers: headers, body: JSON.stringify(payload) };
         return request(options)
         .then(async (body) => {
           // POST succeeded...
@@ -216,7 +224,7 @@ export default class EthereumTodoPage extends React.Component {
         });
       } else {
         this.setState({ newTaskContent: "", gas: 0, showGas: false, loading: true });
-        const options = { url: 'http://localhost:5000/v1/sendTx', method: 'POST', headers: headers, body: JSON.stringify(payload) };
+        const options = { url: 'https://i7sev8z82g.execute-api.us-west-2.amazonaws.com/dev/sendTransaction', method: 'POST', headers: headers, body: JSON.stringify(payload) };
         return request(options)
         .then(async (body) => {
           if(JSON.parse(body).success === true) {

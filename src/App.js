@@ -7,10 +7,12 @@ import signupButton from './hellosignup.png';
 import signinButton from './hellosignIn.png';
 import BlockstackPage from './BlockstackPage';
 import EthereumPage from './EthereumPage';
-import Banner from './Banner';
+import EthereumTodoPage from './EthereumTodoPage';
 import PinataPage from './IPFSPage';
 import BarLoader from 'react-spinners/BarLoader';
 const {simpleIDKeys} = require('./keys');
+
+
 const appObj = {
   appOrigin: window.location.origin,
   scopes: ['store_write', 'publish_data'],
@@ -20,6 +22,9 @@ const appObj = {
 }
 const appConfig = new AppConfig(appObj.scopes);
 const userSession = new UserSession({ appConfig });
+
+const GROWL_DELAY = 5000 // ms
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -29,7 +34,7 @@ class App extends React.Component {
       content: "",
       activeClass: "signup",
       pending: false,
-      page: "blockstack",
+      page: "ethereumTodo",
       loadingMessage: "",
     }
   }
@@ -96,7 +101,7 @@ class App extends React.Component {
         setTimeout(() => {
           document.getElementById('growl').style.display = "none";
           document.getElementById('growl-p').innerText = "";
-        }, 2000)
+        }, GROWL_DELAY)
         console.log(signup);
       }
     }
@@ -130,17 +135,6 @@ class App extends React.Component {
     }
     const signin = await login(params);
 
-    if (signin.message !== 'user session created') {
-      document.getElementById('growl').style.display = "block";
-      document.getElementById('growl-p').innerText = `message: ${signin.message}\nbody: ${signin.body.slice(0,30)}`;
-      this.setState({ pending: false})
-    } else {
-      localStorage.setItem('blockstack-session', JSON.stringify(signin.body.store.sessionData));
-      const appConfig = new AppConfig(appObj.scopes);
-      const userSession = new UserSession({ appConfig });
-      this.setState({ userSession, signedin: true, pending: false });
-    }
-
     if(signin.message === "Need to go through recovery flow") {
       this.setState({ pending: false });
       document.getElementById('log-in-recovery').style.display = "block";
@@ -149,14 +143,15 @@ class App extends React.Component {
       const appConfig = new AppConfig(appObj.scopes);
       const userSession = new UserSession({ appConfig });
       this.setState({ userSession, signedin: true, pending: false });
-    } else if(signin.message === "invalid password") {
+    } else if (signin.message === "invalid password" ||
+               signin.message === "error creating app keys") {
       this.setState({ pending: false });
       document.getElementById('growl').style.display = "block";
       document.getElementById('growl-p').innerText = "Invalid password";
       setTimeout(() => {
         document.getElementById('growl').style.display = "none";
         document.getElementById('growl-p').innerText = "";
-      }, 2000)
+      }, GROWL_DELAY)
     } else {
       this.setState({ pending: false });
       document.getElementById('growl').style.display = "block";
@@ -164,7 +159,7 @@ class App extends React.Component {
       setTimeout(() => {
         document.getElementById('growl').style.display = "none";
         document.getElementById('growl-p').innerText = "";
-      }, 2000)
+      }, GROWL_DELAY)
       console.log(signin);
     }
   }
@@ -175,12 +170,50 @@ class App extends React.Component {
     window.location.reload();
   }
 
+  renderBanner(isSignedIn=false) {
+    const signOutButton = isSignedIn ?
+      ( <button
+          style={{width:'auto', margin:'auto 0px auto auto'}}
+          className="on-white"
+          onClick={this.signOut}>Sign Out</button> ) : undefined
+
+    return (
+      <div className="banner">
+        <img src={logo} alt="simpleid" />
+        {signOutButton}
+      </div>
+    )
+  }
+
   renderFooter() {
     return (
-      <footer className="footer">
-        <img src={logo} alt="simpleid" />
-      </footer>
+      <div id="footer">
+        <h3 style={{fontWeight:'bold'}}>Add SimpleID to your App, free <a href="https://app.simpleid.xyz/?t=demo_app" target="_blank" rel="noreferrer noopener">here</a>.</h3>
+      </div>
     )
+  }
+
+  getPage = (aPageName, theUserSession, theContent) => {
+    switch (aPageName) {
+      case 'blockstack':
+        return (
+          <BlockstackPage
+            userSession={theUserSession} content={theContent}/> )
+        break;
+      case 'ipfs':
+        return (
+          <PinataPage userSession={theUserSession}/> )
+        break;
+      case 'ethereum':
+        // return (
+        //   <EthereumPage userSession={theUserSession}/> )
+        // break;
+      case 'ethereumTodo':
+        return (
+          <EthereumTodoPage userSession={theUserSession}/> )
+      default:
+        return ( <div /> )
+    }
   }
 
   render() {
@@ -189,151 +222,108 @@ class App extends React.Component {
 
     const activeTab = {
       background: "#fff",
-      color: "#809eff"
+      color: "#809eff",
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: '#dadada',
+      borderBottomColor: '#fff',
+      marginBottom: -1
     };
     const inactiveTab = {
       background: "#809eff",
-      color: "#fff"
+      color: "#fff",
     }
     if(userSession.isUserSignedIn()) {
+      // TODO: {/*<h1 style={{marginBottom: "15px", color: "#809eff"}}>Hello, {userSession.loadUserData().username}</h1>*/}
       return (
-        <div style={{paddingTop: "100px"}} className="wrapper">
-          <Banner />
+        <div className="wrapper">
+          {this.renderBanner(true)}
+
           <div style={{display: "none"}} id="dimmer"></div>
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
+
           <div className="container">
-          <div className="tabs">
-            <ul style={{position: "relative", zIndex: "999"}}>
-              <li style={page === "blockstack" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "blockstack" })}>Blockstack Example</li>
-              <li style={page === "ethereum" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereum" })}>Ethereum Example</li>
-              <li style={page === "ipfs" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ipfs" })}>IPFS Example</li>
-            </ul>
+            <div className="tabs">
+              <ul style={{position: "relative", zIndex: "999"}}>
+                <li style={page === "ethereumTodo" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereumTodo" })}>Ethereum</li>
+                {/*<li style={page === "ethereum" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereum" })}>Ethereum Example</li>*/}
+                <li style={page === "ipfs" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ipfs" })}>IPFS</li>
+                <li style={page === "blockstack" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "blockstack" })}>Blockstack</li>
+              </ul>
+            </div>
+            <div className="card">{this.getPage(page, userSession, content)}</div>
           </div>
-          <div className="card">
-            {
-              page === "blockstack" ?
-              <BlockstackPage
-                userSession={userSession}
-                content={content}
-                signOut={this.signOut}
-              /> :
-              page === 'ethereum' ?
-              <EthereumPage
-                userSession={userSession}
-                signOut={this.signOut}
-              /> :
-              page === "ipfs" ?
-              <PinataPage
-                userSession={userSession}
-                signOut={this.signOut}
-              /> :
-              <div />
-            }
-          </div>
+
           {this.renderFooter()}
-          </div>
-          <ul className="bg-bubbles">
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-            </ul>
         </div>
       );
     } else if(pending) {
       return (
-        <div>
+        <div className="wrapper">
+          {this.renderBanner()}
+
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
-          <div className="wrapper">
-            <div className="container">
-              <h1>Just a moment...</h1>
-              <h2 style={{fontStyle:'italic'}}>{loadingMessage}</h2>
-              <div style={{display:"inline-block", margin:"auto"}}>
-                <BarLoader
-                  sizeUnit={"px"}
-                  height={5}
-                  width={100}
-                  color={'white'}
-                  loading={pending}
-                />
-              </div>
+
+          <div className="container">
+            <h1>Just a moment...</h1>
+            <h2 style={{fontStyle:'italic'}}>{loadingMessage}</h2>
+            <div style={{display:"inline-block", margin:"auto"}}>
+              <BarLoader
+                sizeUnit={"px"}
+                height={5}
+                width={100}
+                color={'white'}
+                loading={pending}
+              />
             </div>
-            <ul className="bg-bubbles">
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-            </ul>
+
             {this.renderFooter()}
           </div>
+
         </div>
       )
     } else {
       return (
-        <div>
+        <div className="wrapper">
+          {this.renderBanner()}
+
+          <div style={{display: "none"}} id="dimmer"></div>
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
-          <Banner />
-          <div className="wrapper">
-              <ul className="options" style={{listStyle: "none"}}>
-                <li style={{display: "inline", cursor: "pointer"}} onClick={this.signupForm} className={activeClass === "signup" ? "active" : ""}>Sign Up</li>
-                <li style={{display: "inline", cursor: "pointer"}} onClick={this.loginForm} className={activeClass === "signin" ? "active" : ""}>Sign In</li>
-              </ul>
-              <div style={{display: "none"}} id="log-in" className="formContainer">
-                <h1 style={{textAlign: 'center'}}>Welcome, please sign in</h1>
 
-                <form className="form">
-                  <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-in-fields">Please fill in all fields:</span>
-                  <input id="username-input" type="text" placeholder="Username"/>
-                  <input id="password-input" type="password" placeholder="Password"/>
-                  <div style={{display: "none", margin: "15px", fontWeight: "600"}} id="log-in-recovery">
-                    <h4>Looks like this is a new device or it's been a while since you logged in. You'll have to enter your email address as well to log in.</h4>
-                    <input style={{marginTop: "15px"}} id="email-input" type="email" placeholder="Email"/>
-                  </div>
-                  <button onClick={this.handleLogIn} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signinButton} alt="login" /></button>
-                </form>
+          <div style={{display: "none"}} id="log-in" className="container">
+            <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
+
+            <form className="form">
+              <h2>Please Sign In:</h2>
+              <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-in-fields">Please fill in all fields:</span>
+              <input id="username-input" type="text" placeholder="Username"/>
+              <input id="password-input" type="password" placeholder="Password"/>
+              <div style={{display: "none", margin: "15px", fontWeight: "600"}} id="log-in-recovery">
+                <h4>Looks like this is a new device or it's been a while since you logged in. You'll have to enter your email address as well to log in.</h4>
+                <input style={{marginTop: "15px"}} id="email-input" type="email" placeholder="Email"/>
               </div>
-
-              <div id="sign-up" className="formContainer">
-                <h1 style={{textAlign: 'center'}}>Welcome, please sign up</h1>
-
-                <form className="form">
-                  <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
-                  <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-up-fields">Please fill in all fields:</span>
-                  <input id="username-input-sign-up" type="text" placeholder="Username" />
-                  <input id="password-input-sign-up" type="password" placeholder="Password"/>
-                  <input id="email-input-sign-up" type="email" placeholder="Email"/>
-                  <button onClick={this.handleSignUp} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
-                </form>
-              </div>
-              {this.renderFooter()}
-            </div>
-
-            <ul className="bg-bubbles">
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-            </ul>
-
+              <button onClick={this.handleLogIn} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signinButton} alt="login" /></button>
+              <h3>... or <a className="active" onClick={this.signupForm}>Sign Up</a> to create an account.</h3>
+            </form>
           </div>
+
+          <div id="sign-up" className="container">
+            <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
+
+            <form className="form">
+              <h2>Please Sign Up:</h2>
+              <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
+              <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-up-fields">Please fill in all fields:</span>
+              <input id="username-input-sign-up" type="text" placeholder="Username" />
+              <input id="password-input-sign-up" type="password" placeholder="Password"/>
+              <input id="email-input-sign-up" type="email" placeholder="Email"/>
+              <button onClick={this.handleSignUp} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
+              <h3>... or <a className="active" onClick={this.loginForm}>Sign In</a> to your account.</h3>
+            </form>
+          </div>
+
+          {this.renderFooter()}
+        </div>
       );
     }
   }

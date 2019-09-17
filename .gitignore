@@ -6,6 +6,7 @@
 .pnp.js
 s3sync.sh
 package-lock.json
+yarn.lock
 
 # testing
 /coverage

@@ -128,7 +128,6 @@ export default class EthereumPage extends React.Component {
     return (
       <div>
         <form className="form">
-          <button style={{marginBottom: "25px"}} className="on-white" onClick={this.props.signOut}>Sign Out</button>
           <h1 style={{marginBottom: "15px", color: "#809eff"}}>Hello, {userSession.loadUserData().username}</h1>
           <h2 style={{marginBottom: "35px", color: "#809eff"}}>Test deploying and fetching/executing a smart contract on Ethereum</h2>
           <textarea disabled value={abi}></textarea><br/>

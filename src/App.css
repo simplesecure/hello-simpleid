@@ -50,7 +50,6 @@ body :-ms-input-placeholder {
   color: darkgray;
   font-weight: 300;
 }
-/* AC */
 .formContainer {
   max-width: 400px;
   min-width: 400px;
@@ -68,18 +67,20 @@ body :-ms-input-placeholder {
   padding-right: 10px;
   text-align: 'center';
 }
-/* End AC */
 .wrapper {
   background: #50a3a2;
   background: linear-gradient(to bottom right, #003dff 0%, #c0cfff 100%);
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  min-width: 320px;
+  min-height: 568px;
+  width: 100vw;
   height: 100vh;
   overflow-y: auto;
-  overflow-x: hidden;
-  padding-top: 200px;
+  overflow-x: auto;
+  display:flex;
+  flex-direction:column;
 }
 .wrapper.form-success .container h1 {
   -webkit-transform: translateY(85px);
@@ -87,10 +88,18 @@ body :-ms-input-placeholder {
 }
 .container {
   max-width: 600px;
-  margin: 0 auto;
-  padding: 80px 0;
-  height: 400px;
+  width:96%;
+  /* height:90%; */
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 8px 0px;
   text-align: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
 }
 .container h1 {
   font-size: 32px;
@@ -108,7 +117,7 @@ textarea {
 }
 
 form {
-  padding: 20px 0;
+  padding: 10px 0;
   position: relative;
   z-index: 2;
 }
@@ -121,14 +130,13 @@ form input {
   width: 250px;
   border-radius: 3px;
   padding: 10px 15px;
-  margin: 0 auto 10px auto;
+  margin: 8px auto 8px auto;
   display: block;
   text-align: center;
   font-size: 18px;
   color: #809eff!important;
   transition-duration: 0.25s;
   font-weight: 300;
-  margin-top: 25px;
 }
 form input:hover {
   color: #809eff!important;
@@ -158,8 +166,8 @@ form button:hover {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   z-index: 1;
 }
 .bg-bubbles li {
@@ -245,11 +253,13 @@ form button:hover {
 }
 
 .options {
-  position: absolute;
-  top: 160px;
+  /* position: absolute;
+  top: 460px; */
   width: 100%;
-  z-index: 999;
+  display: flex;
+  /* z-index: 999; */
   text-align: center;
+  justify-content: center;
 }
 
 .options li {
@@ -272,6 +282,40 @@ form button:hover {
   transition-duration: 0.25s;
 }
 
+.center-form-button {
+  margin: 8px auto 8px auto;
+  display: block;
+}
+
+.instruction-text {
+  color: #809eff;
+  margin-top:15px;
+}
+
+.result-text-scroll-x {
+  overflow-x: scroll;
+  background: yellow;
+  color: black;
+  padding: 10px;
+  margin: 5px 0px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  border-color: #d4deff;
+}
+
+.display-text-scroll-x {
+  overflow-x: scroll;
+  background: #eee;
+  color: black;
+  padding: 10px;
+  margin: 5px 0px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  border-color: #d4deff;
+}
+
 .on-white {
   -webkit-appearance: none!important;
   -moz-appearance: none!important;
@@ -292,17 +336,23 @@ form button:hover {
   border-bottom: 2px #fff solid;
 }
 
-#banner {
-  position: fixed;
+#footer {
+  /* position: fixed;
   top: 0;
-  left: 0;
+  left: 0; */
   width: 100%;
-  text-align: center;
-  height: 75px;
-  background: #e6e600;
-  padding-top: 30px;
+  min-height: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffff09;
+  /* padding-top: 30px; */
   color: #000;
   z-index: 999;
+  border-top-style:solid;
+  border-top-width: 1px;
+  border-top-color: #dadada;
 }
 
 #growl {
@@ -312,29 +362,35 @@ form button:hover {
   opacity: 0.7;
   position: fixed;
   z-index: 999;
-  bottom: 15px;
+  bottom: 65px;
   right: 15px;
   border-radius: 5px;
   color: #fff;
+  display: flex;
 }
 
 #growl p {
   text-align: center;
   width: 95%;
   margin: auto;
-  margin-top: 25px;
   font-size: 20px;
+  font-weight: bold;
 }
-footer {
+.banner {
   width: 100%;
-  bottom: 0;
-  text-align: center;
-  margin-top: 200px;
+  height: 65px;
+  min-height: 65px;
+  padding:0px 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  z-index: 999;
 }
-footer img {
-  max-width: 25%;
-  margin: auto;
-  margin-bottom: 25px;
+.banner img {
+  max-width: 50%;
+  max-height: 55px;
+  margin: auto auto auto 0px;
+  /* margin-bottom: 25px; */
 }
 
 #name-error {
@@ -399,9 +455,16 @@ footer img {
 }
 
 .card {
-  padding: 20px;
+  padding: 10px;
   background: #fff;
   border-radius: 5px;
+  /* overflow:scroll; */
+  overflow-x: hidden;
+  overflow-y: scroll;
+  border-style:solid;
+  border-width: 1px;
+  border-color: #dadada;
+  display: flex;
 }
 
 @-webkit-keyframes square {

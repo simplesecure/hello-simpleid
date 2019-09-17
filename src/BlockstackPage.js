@@ -1,5 +1,7 @@
 import React from 'react';
 
+const GROWL_DISPLAY_STYLE = 'flex'
+
 export default class BlockstackPage extends React.Component {
   constructor(props) {
     super(props);
@@ -12,13 +14,13 @@ export default class BlockstackPage extends React.Component {
     const { userSession } = this.props;
     const content = document.getElementById('content-input').value;
     const title = document.getElementById('title-input').value;
-    document.getElementById('growl').style.display = "block";
+    document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
     document.getElementById('growl-p').innerText = "Saving file...";
     if(title && content) {
       userSession.putFile(`${title}.json`, content, {encrypt: false})
         .then((res) => {
           console.log(res);
-          document.getElementById('growl').style.display = "block";
+          document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
           document.getElementById('growl-p').innerText = "File saved!";
           setTimeout(() => {
             document.getElementById('growl').style.display = "none";
@@ -26,8 +28,8 @@ export default class BlockstackPage extends React.Component {
           }, 2000)
         }).catch((err) => {
           console.log(err)
-          document.getElementById('growl').style.display = "block";
-          document.getElementById('growl-p').innerText = "Trouble saving";
+          document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
+          document.getElementById('growl-p').innerText = "Trouble saving!";
           setTimeout(() => {
             document.getElementById('growl').style.display = "none";
             document.getElementById('growl-p').innerText = "";
@@ -38,7 +40,7 @@ export default class BlockstackPage extends React.Component {
 
   fetchContent = (e) => {
     e.preventDefault();
-    document.getElementById('growl').style.display = "block";
+    document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
     document.getElementById('growl-p').innerText = "Fetching content...";
     const { userSession } = this.props;
     const title = document.getElementById('title-input').value;
@@ -50,8 +52,8 @@ export default class BlockstackPage extends React.Component {
             document.getElementById('growl').style.display = "none";
             document.getElementById('growl-p').innerText = "";
           } else {
-            document.getElementById('growl').style.display = "block";
-            document.getElementById('growl-p').innerText = "No file found";
+            document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
+            document.getElementById('growl-p').innerText = "No file found!";
             setTimeout(() => {
               document.getElementById('growl').style.display = "none";
               document.getElementById('growl-p').innerText = "";
@@ -59,8 +61,8 @@ export default class BlockstackPage extends React.Component {
           }
         }).catch((err) => {
           console.log(err);
-          document.getElementById('growl').style.display = "block";
-          document.getElementById('growl-p').innerText = "Trouble saving";
+          document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
+          document.getElementById('growl-p').innerText = "Trouble fetching!";
           setTimeout(() => {
             document.getElementById('growl').style.display = "none";
             document.getElementById('growl-p').innerText = "";
@@ -71,30 +73,33 @@ export default class BlockstackPage extends React.Component {
   render() {
     const { userSession } = this.props;
     const { content } = this.state;
+
+    const contentElement = content ?
+      ( <div className='result-text-scroll-x'>
+          This data:
+          <p style={{color: "#809eff"}}>"{content}"</p>
+          was fetched from your file on Blockstack Gaia.
+        </div> ) : undefined
+
     return (
-      <div>
-        <form className="form">
-          <button style={{marginBottom: "25px"}} className="on-white" onClick={this.props.signOut}>Sign Out</button>
-          <h1 style={{marginBottom: "15px", color: "#809eff"}}>Hello, {userSession.loadUserData().username}</h1>
-          <h2 style={{marginBottom: "35px", color: "#809eff"}}>Test storing some content with Blockstack's Gaia Storage</h2>
-          <input placeholder="my_new_file" type="text" id="title-input" />
-          <label style={{color: "#809eff"}}>File name</label>
-          <br/>
-          <input placeholder="test content here" style={{marginTop: "20px"}} type="text" id="content-input" />
-          <label style={{color: "#809eff"}}>Content to save</label>
-          <br/>
-          <button className="on-white" style={{marginTop: "15px"}} onClick={this.saveContent}>Store content</button>
-          <br/>
-          <button className="on-white" style={{marginTop: "15px"}} onClick={this.fetchContent}>Fetch content</button>
-          
-        </form>
-        <div style={{marginTop: "20px"}}>
-          <h3 style={{color: "#809eff"}}>Your stored content will appear below when fetched</h3>
-          <div style={{marginTop: "20px"}}>
-            <h1 style={{color: "#809eff"}}>{content}</h1>
-          </div>
-        </div>
-      </div>
+      <form style={{textAlign:'left', overflowX:'hidden', width:'100%'}} className="form">
+
+        <h2 style={{color: "#809eff"}}>Write and read a file from Blockstack's Gaia Storage in this demo:</h2>
+
+        <h3 className='instruction-text'>1. Choose a file name:</h3>
+        <input placeholder="file name" type="text" id="title-input" />
+
+        <h3 className='instruction-text'>2. Enter some text to store in your file:</h3>
+        <input placeholder="file content" type="text" id="content-input" />
+
+        <h3 className='instruction-text'>3. Click to store your file on Gaia:</h3>
+        <button className="center-form-button on-white" onClick={this.saveContent}>Store File</button>
+
+        <h3 className='instruction-text'>4. Click to fetch your file from Gaia:</h3>
+        <button className="center-form-button on-white" onClick={this.fetchContent}>Fetch File</button>
+        {contentElement}
+
+      </form>
     )
   }
 }

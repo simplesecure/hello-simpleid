@@ -334,7 +334,6 @@ export default class EthereumTodoPage extends React.Component {
                 <div><button onClick={this.deployContract}>Deploy Your Smart Contract</button></div>
                 <div style={{display:'flex', flexDirection:'row'}}><input type="text" value={customAddress} onChange={this.handleAddrChange} placeholder="Your contract address" /><button onClick={() => this.fetchContract(true)}>Fetch Your Contract</button></div> */}
                 <div className="todos" style={{display:'flex', flexDirection:'column'}}>
-                  <h3>Todo List</h3>
                   {
                     tasks.map((task) => {
                       return (
@@ -343,8 +342,8 @@ export default class EthereumTodoPage extends React.Component {
                                       flexDirection:'row',
                                       alignItems: 'center',
                                       justifyContent: 'flex-start'}}>
-                          <input style={{flex:0}} type="checkbox" onChange={() => this.toggleTask(task.id)} checked={task.completed} />
-                          <div style={task.completed ? {flex:1, textDecoration: "strikethrough"} : {flex:1, textDecoration: "none"}}>{task.content}</div>
+                          <input style={{display:'flex', flex:0}} type="checkbox" onChange={() => this.toggleTask(task.id)} checked={task.completed} />
+                          <div style={task.completed ? {display:'flex', flex:1, textDecoration: "strikethrough"} : {display:'flex', flex:1, textDecoration: "none"}}>{task.content}</div>
                         </div>
                       )
                     })

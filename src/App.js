@@ -4,7 +4,7 @@ import './App.css';
 import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
 import signupButton from './hellosignup.png';
-import signinButton from './hellosignIn.png';
+import signinButton from './hellosignin.png';
 import BlockstackPage from './BlockstackPage';
 import EthereumPage from './EthereumPage';
 import EthereumTodoPage from './EthereumTodoPage';
@@ -16,9 +16,9 @@ const {simpleIDKeys} = require('./keys');
 const appObj = {
   appOrigin: window.location.origin,
   scopes: ['store_write', 'publish_data'],
-  apiKey: simpleIDKeys().apiKey,
-  devId: simpleIDKeys().devId,
-  development: false
+  apiKey: process.env.NODE_ENV === "production" ? simpleIDKeys().apiKey : "-LmCb96-TquOlN37LpM0",
+  devId: process.env.NODE_ENV === "production" ? simpleIDKeys().devId : "imanewdeveloper",
+  development: process.env.NODE_ENV === "production" ? false : true
 }
 const appConfig = new AppConfig(appObj.scopes);
 const userSession = new UserSession({ appConfig });

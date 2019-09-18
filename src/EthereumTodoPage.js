@@ -179,8 +179,8 @@ export default class EthereumTodoPage extends React.Component {
       tasksArr.push(taskObj);
       this.setState({tasks: tasksArr})
     }
-    //If the tx hasn't been mined yet
-    if(count < localTaskCount) {
+    //  If the tx hasn't been mined yet
+    if (count < localTaskCount) {
       console.log("Awaiting tx mining...");
       localTask.id = JSON.stringify(localTask.id);
       console.log(localTask)
@@ -188,6 +188,71 @@ export default class EthereumTodoPage extends React.Component {
       this.setState({ tasks: tasksArr});
     }
     this.setState({ loading: false });
+  }
+
+  handleRefreshCall = async (custom=undefined) => {
+    document.getElementById('growl').style.display = "flex";
+    document.getElementById('growl-p').innerText = `Refreshing from contract.`;
+    let tasks = await this.fetchContractNoUI()
+    document.getElementById('growl').style.display = "none";
+    document.getElementById('growl-p').innerText = ``;
+    this.setState({tasks})
+  }
+
+  // Grab the state of tasks before any change.
+  // If the transaction is approved, when loading is complete and we are done,
+  // monitor in a loop, every n seconds to see if the tasks returned from
+  // fetch contract differ from the state before the change. If so,
+  // push a growl to the user that the contract is mined.
+  pollEthereumForMiningComplete = async (iteration=0) => {
+    const POLL_DELAY = 3000
+
+    console.log(`DBG::pollEthereumForMiningComplete: ${iteration}`)
+
+    if (iteration < 5) {
+      document.getElementById('growl').style.display = "flex";
+      document.getElementById('growl-p').innerText = `Polling contract ${iteration}`;
+
+      await setTimeout(
+        async () => {
+          const tasksArr = await this.fetchContractNoUI()
+          console.log(`Local: ${JSON.stringify(this.state.tasks)}`)
+          console.log(`Contr: ${JSON.stringify(tasksArr)}`)
+          iteration++
+          this.pollEthereumForMiningComplete(iteration)
+        },
+        POLL_DELAY
+      )
+    } else {
+      await this.fetchContract()
+      document.getElementById('growl').style.display = "none";
+      document.getElementById('growl-p').innerText = '';
+    }
+  }
+
+
+  fetchContractNoUI = async (custom) => {
+    const { customAddress } = this.state;
+    let address = custom ? customAddress : network === "local" ? contractAddress : ropContractAddress;
+    let tasksArr = [];
+
+    ///////WEB3JS CODE//////
+    let contract = new web3.eth.Contract(abi, address);
+    const taskCount = await contract.methods.taskCount().call();
+    const count = JSON.parse(taskCount);
+
+    for (let i = 1; i < count + 1; i++) {
+      let task = await contract.methods.tasks(i).call();
+      const taskObj = {
+        id: task[0],
+        content: task[1],
+        completed: task[2]
+      }
+      console.log(taskObj)
+      tasksArr.push(taskObj);
+    }
+
+    return tasksArr
   }
 
   newTask = async () => {
@@ -242,6 +307,7 @@ export default class EthereumTodoPage extends React.Component {
         const options = { url: 'https://i7sev8z82g.execute-api.us-west-2.amazonaws.com/dev/createContract', method: 'POST', headers: headers, body: JSON.stringify(payload) };
         return request(options)
         .then(async (body) => {
+
           // POST succeeded...
           let contract = JSON.parse(body);
           sessionStorage.setItem('your_contract_address', contract.address);
@@ -277,6 +343,11 @@ export default class EthereumTodoPage extends React.Component {
           if(customAddress) {
             this.fetchContract(true);
           } else {
+            // Attempt at a polling alg.
+            // The amount of time can be too much though.
+            // this.setState({ loading: false });
+            // console.log('POST to createContract succeeded, calling pollEthereumForMiningComplete...')
+            // this.pollEthereumForMiningComplete()
             this.fetchContract();
           }
 
@@ -308,9 +379,9 @@ export default class EthereumTodoPage extends React.Component {
   renderLoading() {
     return (
       <div>
-        <h2 className='instruction-text'>Loading...</h2>
+        <h2 className='instruction-text'>Processing...</h2>
         <br />
-        <h2  className='instruction-text'>Do not refresh your page. If deploying a contract, this may take up to a few minutes.</h2>
+        <h2  className='instruction-text'>Do not refresh your page. If deploying or updating a contract, this may take up to a few minutes.</h2>
       </div>
     )
   }
@@ -383,14 +454,22 @@ export default class EthereumTodoPage extends React.Component {
             <div className="todos">
               {
                 tasks.map((task) => {
+                  const eleCheckbox = task.completed ?
+                    ( <wired-checkbox checked onClick={() => this.toggleTask(task.id)} /> ) :
+                    ( <wired-checkbox onClick={() => this.toggleTask(task.id)} /> )
+
+                  const eleTaskText = task.completed ?
+                    ( <div style={{display:'flex', flex:1, marginLeft:5, textDecoration: "line-through"}}>{task.content}</div> ) :
+                    ( <div style={{display:'flex', flex:1, marginLeft:5, textDecoration: "none"}}>{task.content}</div> )
+
                   return (
                     <div key={task.id}
                          style={{ display:'flex',
                                   flexDirection:'row',
                                   alignItems: 'center',
                                   justifyContent: 'flex-start'}}>
-                      <wired-checkbox checked={task.completed} onChange={() => this.toggleTask(task.id)} />
-                      <div style={task.completed ? {display:'flex', flex:1, marginLeft:5, textDecoration: "strikethrough"} : {display:'flex', flex:1, marginLeft:5, textDecoration: "none"}}>{task.content}</div>
+                      {eleCheckbox}
+                      {eleTaskText}
                     </div>
                   )
                 })
@@ -398,7 +477,9 @@ export default class EthereumTodoPage extends React.Component {
             </div>
           </div>
 
-          <button className="center-form-button on-white" onClick={() => this.fetchContract()}>Refresh (Fetch Contract)</button>
+          <h3 className='instruction-text'>Step 5. Refresh until your changes appear.</h3>
+          <h4 style={{color:"#809eff"}}>(It can take up to 3 minutes for mining.)</h4>
+          <button className="center-form-button on-white" onClick={() => this.handleRefreshCall()}>Refresh (Fetch Contract)</button>
         </div>
       )
     } else {

@@ -12,7 +12,6 @@ import PinataPage from './IPFSPage';
 import BarLoader from 'react-spinners/BarLoader';
 const {simpleIDKeys} = require('./keys');
 
-
 const appObj = {
   appOrigin: window.location.origin,
   scopes: ['store_write', 'publish_data'],
@@ -23,6 +22,7 @@ const appObj = {
 const appConfig = new AppConfig(appObj.scopes);
 const userSession = new UserSession({ appConfig });
 
+const GROWL_DISPLAY_STYLE = 'flex'
 const GROWL_DELAY = 5000 // ms
 
 class App extends React.Component {
@@ -96,7 +96,7 @@ class App extends React.Component {
         this.setState({ userSession: signup.body, signedin: true, pending: false });
       } else {
         this.setState({ pending: false });
-        document.getElementById('growl').style.display = "block";
+        document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
         document.getElementById('growl-p').innerText = "Trouble signing up";
         setTimeout(() => {
           document.getElementById('growl').style.display = "none";
@@ -146,7 +146,7 @@ class App extends React.Component {
     } else if (signin.message === "invalid password" ||
                signin.message === "error creating app keys") {
       this.setState({ pending: false });
-      document.getElementById('growl').style.display = "block";
+      document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
       document.getElementById('growl-p').innerText = "Invalid password";
       setTimeout(() => {
         document.getElementById('growl').style.display = "none";
@@ -154,7 +154,7 @@ class App extends React.Component {
       }, GROWL_DELAY)
     } else {
       this.setState({ pending: false });
-      document.getElementById('growl').style.display = "block";
+      document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
       document.getElementById('growl-p').innerText = "Trouble signing in";
       setTimeout(() => {
         document.getElementById('growl').style.display = "none";

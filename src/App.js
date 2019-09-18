@@ -4,7 +4,7 @@ import './App.css';
 import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
 import signupButton from './hellosignup.png';
-import signinButton from './hellosignin.png';
+import signinButton from './hellosignIn.png';
 import BlockstackPage from './BlockstackPage';
 import EthereumPage from './EthereumPage';
 import EthereumTodoPage from './EthereumTodoPage';
@@ -234,13 +234,20 @@ class App extends React.Component {
       color: "#fff",
     }
     if(userSession.isUserSignedIn()) {
-      // TODO: {/*<h1 style={{marginBottom: "15px", color: "#809eff"}}>Hello, {userSession.loadUserData().username}</h1>*/}
       return (
         <div className="wrapper">
           {this.renderBanner(true)}
 
           <div style={{display: "none"}} id="dimmer"></div>
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
+
+          <div className="container" style={{flex:'none', paddingTop:0}}>
+            <div className="card" style={{padding:'0px 10px'}}>
+              <form style={{textAlign:'left', overflowX:'hidden', width:'100%'}} className="form">
+                <h4 style={{color: "#809eff"}}>Signed-in as {userSession.loadUserData().username}</h4>
+              </form>
+            </div>
+          </div>
 
           <div className="container">
             <div className="tabs">

@@ -19,7 +19,7 @@ web3.eth.net.isListening()
 let headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
 web3.eth.getAccounts().then(console.log)
 //const account1 = "0xe9CF9486ECf63bdA487B64698085A51392f42081"; //Fetch this from the user session object
-let account1; 
+let account1;
 
 export default class EthereumTodoPage extends React.Component {
   constructor(props) {
@@ -37,7 +37,7 @@ export default class EthereumTodoPage extends React.Component {
       yourContractAddress: "",
       customAddress: "",
       contractApproval: false,
-      error: "", 
+      error: "",
       username: JSON.parse(localStorage.getItem('blockstack-session')).userData.username
     }
   }
@@ -274,6 +274,86 @@ export default class EthereumTodoPage extends React.Component {
     e.preventDefault()
   }
 
+  renderLoading() {
+    return (
+      <div>
+        <h1>Loading...</h1>
+        <p>Do not refresh your page. If deploying a contract, this may take up to a few minutes.</p>
+      </div>
+    )
+  }
+
+  renderGasEstimateApproval(gas, password, error) {
+    return (
+      <div>
+        <p>This transaction requires {gas} gas. Approve transaction?</p>
+        <input type="password" id="password" value={password} onChange={this.handlePassword} placeholder="password" required />
+        <button onClick={this.approveTransaction}>Approve</button>
+        <button onClick={this.rejectTransaction}>Reject</button>
+        <span style={{color: "red"}}>{error}</span>
+      </div>
+    )
+  }
+
+  renderInstructionsForm( account1,
+                          simpleIDContract,
+                          yourContractAddress,
+                          error,
+                          customAddress,
+                          newTaskContent,
+                          tasks) {
+    return (
+      <div>
+        <h3 className='instruction-text'>1. Copy your Ethereum Address:</h3>
+        <div className='display-text-scroll-x'>
+          <p style={{color: "#809eff"}}>{account1}</p>
+        </div>
+
+        <h3 className='instruction-text'>2. Use your copied Ethereum address to get some Ether at this link:&nbsp;
+          <a href="https://faucet.ropsten.be/" target="_blank" rel="noreferrer noopener">here</a>.
+        </h3>
+
+        <h3 className='instruction-text'>3. In this demo, the smart contract holds Todo list items. You can use SimpleID's default contract address:</h3>
+        <div className='display-text-scroll-x'>
+          <p style={{color: "#809eff"}}>{simpleIDContract}</p>
+        </div>
+        <h3>Or you can deploy your own smart contract below and use it's address:</h3>
+        <button className="center-form-button on-white" onClick={this.deployContract}>Deploy Your Contract</button>
+        <div className='display-text-scroll-x'>
+          <p style={{color: "#809eff"}}>{yourContractAddress ? yourContractAddress : "Fund your Ethereum Testnet (ropsten) address, and then click deploy"}</p>
+        </div>
+        <p>{error}</p>
+
+        <h3 className='instruction-text'>4. Now fetch your smart contract to populate the Todo list display:</h3>
+        <input value={customAddress} onChange={this.handleAddrChange} placeholder="Your contract address" type="text" />
+        <button className="center-form-button on-white" onClick={() => this.fetchContract(true)}>Fetch Your Contract</button>
+
+        <h3 className='instruction-text'>5. Use the input field and button below to add items to your Todo list:</h3>
+        <input value={newTaskContent} onChange={this.handleChange} placeholder="A task ..." type="text" />
+        <button className="center-form-button on-white" onClick={this.newTask}>Add Task</button>
+
+        <h2 className='instruction-text'>Your Todo List:</h2>
+
+        <div className="todos" style={{display:'flex', flexDirection:'column'}}>
+          {
+            tasks.map((task) => {
+              return (
+                <div key={task.id}
+                     style={{ display:'flex',
+                              flexDirection:'row',
+                              alignItems: 'center',
+                              justifyContent: 'flex-start'}}>
+                  <input style={{display:'flex', flex:0}} type="checkbox" onChange={() => this.toggleTask(task.id)} checked={task.completed} />
+                  <div style={task.completed ? {display:'flex', flex:1, textDecoration: "strikethrough"} : {display:'flex', flex:1, textDecoration: "none"}}>{task.content}</div>
+                </div>
+              )
+            })
+          }
+        </div>
+      </div>
+    )
+  }
+
   render() {
     const { userSession } = this.props;
     const { error,
@@ -290,82 +370,18 @@ export default class EthereumTodoPage extends React.Component {
     console.log(`render: loading=${loading}, showGas=${showGas}, yourContractAddress=${yourContractAddress}, customAddress=${customAddress}`)
 
     const formContent =
-            loading ?
-            (<div>
-              <h1>Loading...</h1>
-              <p>Do not refresh your page. If deploying a contract, this may take up to a few minutes.</p>
-            </div>) :
-            showGas ?
-            (<div>
-              <p>This transaction requires {gas} gas. Approve transaction?</p>
-              <input type="password" id="password" value={password} onChange={this.handlePassword} placeholder="password" required />
-              <button onClick={this.approveTransaction}>Approve</button>
-              <button onClick={this.rejectTransaction}>Reject</button>
-              <span style={{color: "red"}}>{error}</span>
-            </div>) :
-            (
-              <div>
-                <h3 className='instruction-text'>1. Copy your Ethereum Address:</h3>
-                <div className='display-text-scroll-x'>
-                  <p style={{color: "#809eff"}}>{account1}</p>
-                </div>
-
-                <h3 className='instruction-text'>2. Use your copied Ethereum address to get some Ether at this link:&nbsp;
-                  <a href="https://faucet.ropsten.be/" target="_blank" rel="noreferrer noopener">here</a>.
-                </h3>
-
-                <h3 className='instruction-text'>3. In this demo, the smart contract holds Todo list items. You can use SimpleID's default contract address:</h3>
-                <div className='display-text-scroll-x'>
-                  <p style={{color: "#809eff"}}>{simpleIDContract}</p>
-                </div>
-                <h3>Or you can deploy your own smart contract below and use it's address:</h3>
-                <button className="center-form-button on-white" onClick={this.deployContract}>Deploy Your Contract</button>
-                <div className='display-text-scroll-x'>
-                  <p style={{color: "#809eff"}}>{yourContractAddress ? yourContractAddress : "Fund your Ethereum Testnet (ropsten) address, and then click deploy"}</p>
-                </div>
-                <p>{error}</p>
-
-                <h3 className='instruction-text'>4. Now fetch your smart contract to populate the Todo list display:</h3>
-                <input value={customAddress} onChange={this.handleAddrChange} placeholder="Your contract address" type="text" />
-                <button className="center-form-button on-white" onClick={() => this.fetchContract(true)}>Fetch Your Contract</button>
-
-                <h3 className='instruction-text'>5. Use the input field and button below to add items to your Todo list:</h3>
-                <input value={newTaskContent} onChange={this.handleChange} placeholder="A task ..." type="text" />
-                <button className="center-form-button on-white" onClick={this.newTask}>Add Task</button>
-
-                <h2 className='instruction-text'>Your Todo List:</h2>
-                {/*<h4>Need some ether? Get it <a href="https://faucet.ropsten.be/" target="_blank" rel="noreferrer noopener">here</a></h4>
-                <p>Your Ethereum Address: <code style={{background: "#eee", padding: "3px"}}>{account1}</code></p>
-                <p>SimpleID Default Contract Address: <code style={{background: "#eee", padding: "3px"}}>{simpleIDContract}</code></p>
-                <p>Your Contract Address: <code style={{background: "#eee", padding: "3px"}}>{yourContractAddress ? yourContractAddress : "Fund your Ethereum Testnet (ropsten) address, and then click deploy"}</code></p>
-                <p>{error}</p>
-                <div><button onClick={this.deployContract}>Deploy Your Smart Contract</button></div>
-                <div style={{display:'flex', flexDirection:'row'}}><input type="text" value={customAddress} onChange={this.handleAddrChange} placeholder="Your contract address" /><button onClick={() => this.fetchContract(true)}>Fetch Your Contract</button></div> */}
-                <div className="todos" style={{display:'flex', flexDirection:'column'}}>
-                  {
-                    tasks.map((task) => {
-                      return (
-                        <div key={task.id}
-                             style={{ display:'flex',
-                                      flexDirection:'row',
-                                      alignItems: 'center',
-                                      justifyContent: 'flex-start'}}>
-                          <input style={{display:'flex', flex:0}} type="checkbox" onChange={() => this.toggleTask(task.id)} checked={task.completed} />
-                          <div style={task.completed ? {display:'flex', flex:1, textDecoration: "strikethrough"} : {display:'flex', flex:1, textDecoration: "none"}}>{task.content}</div>
-                        </div>
-                      )
-                    })
-                  }
-                {/*<div style={{display:'flex', flexDirection:'row'}}>
-                    <input type="text" value={newTaskContent} onChange={this.handleChange} placeholder="new task" />
-                    <button onClick={this.newTask}>New Task</button>
-                  </div>*/}
-                </div>
-              </div>
-            )
+      loading ?
+        this.renderLoading() :
+      showGas ?
+        this.renderGasEstimateApproval(gas, password, error) :
+        this.renderInstructionsForm(
+          account1, simpleIDContract, yourContractAddress, error, customAddress, newTaskContent, tasks)
 
     return (
-      <form onSubmit={this.handleSubmit} style={{color: '#809eff', textAlign:'left', overflowX:'hidden', width:'100%'}} className="form">
+      <form
+        onSubmit={this.handleSubmit}
+        style={{color: '#809eff', textAlign:'left', overflowX:'hidden', width:'100%'}}
+        className="form">
         <h2 style={{color: "#809eff"}}>Ethereum ToDo List</h2>
         <h4 style={{color: "#809eff", fontStyle:'italic'}}>A terrible use of the Blockchain, but a great demo of SimpleID's simplicity.</h4>
         {formContent}

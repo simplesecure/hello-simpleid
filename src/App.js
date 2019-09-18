@@ -242,11 +242,7 @@ class App extends React.Component {
           <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
 
           <div className="container" style={{flex:'none', paddingTop:0}}>
-            <div className="card" style={{padding:'0px 10px'}}>
-              <form style={{textAlign:'left', overflowX:'hidden', width:'100%'}} className="form">
-                <h4 style={{color: "#809eff"}}>Signed-in as {userSession.loadUserData().username}</h4>
-              </form>
-            </div>
+            <h4 style={{color: "#fff"}}>Signed-in as {userSession.loadUserData().username}</h4>
           </div>
 
           <div className="container">

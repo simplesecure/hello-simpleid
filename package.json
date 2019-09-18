@@ -14,7 +14,8 @@
     "request-promise": "^4.2.4",
     "simpleid-js-sdk": "^0.4.8",
     "universal-cookie": "^4.0.2",
-    "web3": "^1.2.1"
+    "web3": "^1.2.1",
+    "wired-checkbox": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

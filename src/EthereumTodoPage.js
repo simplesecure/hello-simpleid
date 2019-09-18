@@ -408,6 +408,13 @@ export default class EthereumTodoPage extends React.Component {
                           tasks,
                           basicDemo) {
     if (basicDemo) {
+      // TODO: refactor to utils
+      // https://stackoverflow.com/questions/49328382/browser-detection-in-reactjs
+      const isFirefox = typeof InstallTrigger !== 'undefined';
+      const copyPasteBox = (isFirefox) ?
+        <input className='display-copyable-input' id='ethereum-address' value={account1} type="text" /> :
+        <input className='display-copyable-input' disabled id='ethereum-address' value={account1} type="text" />
+
       return (
         <div>
           <h3 className='instruction-text'>Step 1. Copy your Ethereum Address:</h3>
@@ -420,7 +427,7 @@ export default class EthereumTodoPage extends React.Component {
               style={{marginLeft:2}}
               className='display-text-scroll-x'> */}
               {/*<p id='ethereum-address' style={{color: "#809eff"}}>{account1}</p>*/}
-              <input className='display-copyable-input' disabled id='ethereum-address' value={account1} type="text" />
+              {copyPasteBox}
             {/*</div>*/}
           </div>
 

@@ -4,7 +4,7 @@ import './App.css';
 import logo from './white-logo.png';
 import { login, createUserAccount } from 'simpleid-js-sdk';
 import signupButton from './hellosignup.png';
-import signinButton from './hellosignin.png';
+import signinButton from './hellosignIn.png';
 import BlockstackPage from './BlockstackPage';
 import EthereumPage from './EthereumPage';
 import EthereumTodoPage from './EthereumTodoPage';

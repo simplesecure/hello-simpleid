@@ -82,7 +82,11 @@ class App extends React.Component {
 
     this.setState({ pending: true });
 
-    const signup = await createUserAccount(credObj, appObj, { statusCallbackFn: this.statusCallbackFn })
+    const options = {
+       statusCallbackFn: this.statusCallbackFn,
+       passwordless: true
+    }
+    const signup = await createUserAccount(credObj, appObj, options)
     console.log(signup);
     if(signup.message === "name taken") {
       this.setState({ pending: false });

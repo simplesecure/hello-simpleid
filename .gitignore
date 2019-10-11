@@ -22,6 +22,7 @@ yarn.lock
 .env.test.local
 .env.production.local
 keys.js
+keys.json
 
 npm-debug.log*
 yarn-debug.log*

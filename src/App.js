@@ -13,15 +13,25 @@ import BarLoader from 'react-spinners/BarLoader';
 import SimpleID from 'simpleid-js-sdk';
 const {simpleIDKeys} = require('./keys');
 const simple = new SimpleID({
-  appOrigin: "https://app.graphitedocs.com",
+  appOrigin: "https://www.simpleid.xyz/hello",
   scopes: ['store_write', 'publish_data'],
   apiKey: "123456",
   devId: "justin.email.email@email.com",
-  appName: "Graphite", 
-  development: true, 
-  network: 'layer2', 
+  appName: "Hello SimpleID!",
+  development: true,
+  network: 'layer2',
   localRPCServer: 'http://localhost:7545'
 });
+// const simple = new SimpleID({
+//   appOrigin: "https://app.graphitedocs.com",
+//   scopes: ['store_write', 'publish_data'],
+//   apiKey: "123456",
+//   devId: "justin.email.email@email.com",
+//   appName: "Graphite",
+//   development: true,
+//   network: 'layer2',
+//   localRPCServer: 'http://localhost:7545'
+// });
 const appObj = {
   appOrigin: window.location.origin,
   scopes: ['store_write', 'publish_data'],
@@ -47,12 +57,15 @@ class App extends React.Component {
       page: "ethereumTodo",
       loadingMessage: "",
     }
+
+    this.email = undefined
   }
 
   loginForm = () => {
     this.setState({ activeClass: "signin" });
     document.getElementById('log-in').style.display = "block";
     document.getElementById('sign-up').style.display = "none";
+    document.getElementById('enter-code').style.display = "none";
     document.getElementById('error-sign-in-fields').style.display = "none";
   }
 
@@ -60,6 +73,7 @@ class App extends React.Component {
     this.setState({ activeClass: "signup" });
     document.getElementById('log-in').style.display = "none";
     document.getElementById('sign-up').style.display = "block";
+    document.getElementById('enter-code').style.display = "none";
     document.getElementById('error-sign-up-fields').style.display = "none";
   }
 
@@ -68,21 +82,22 @@ class App extends React.Component {
   }
 
 
-  handleSignUp = async (e, code) => {
+  handleSignUp = async (e) => {
     e.preventDefault();
     document.getElementById('name-error').style.display = "none";
     document.getElementById('error-sign-up-fields').style.display = "none";
 
+    this.email = document.getElementById('email-input-sign-up').value
     const credObj = {
-      id: document.getElementById('username-input-sign-up').value,
-      password: document.getElementById('password-input-sign-up').value,
-      email: document.getElementById('email-input-sign-up').value,
+      // id: document.getElementById('username-input-sign-up').value,
+      // password: document.getElementById('password-input-sign-up').value,
+      email: this.email,
       hubUrl: "https://hub.blockstack.org"
     }
 
     // Error check
     let error = false
-    if (!credObj.id) {
+    if (!credObj.email) {
       document.getElementById('error-sign-up-fields').style.display = "block";
       error = true
     }
@@ -104,8 +119,16 @@ class App extends React.Component {
       this.setState({ pending: false });
       await this.signupForm();
       document.getElementById('name-error').style.display = "block";
+    } else if (signup.message === "Approval email sent") {
+      this.setState({ pending: false });
+      document.getElementById('name-error').style.display = "none";
+      document.getElementById('error-sign-up-fields').style.display = "none";
+
+      document.getElementById('log-in').style.display = "none";
+      document.getElementById('sign-up').style.display = "none";
+      document.getElementById('enter-code').style.display = "block";
     } else {
-      localStorage.setItem('blockstack-session', JSON.stringify(signup.body.store.sessionData));
+      // localStorage.setItem('blockstack-session', JSON.stringify(signup.body.store.sessionData));
       if(signup.message === "Need to go through recovery flow") {
         document.getElementById('log-in-recovery').style.display = "block";
       } else if(signup.message === "user session created") {
@@ -123,9 +146,20 @@ class App extends React.Component {
     }
   }
 
-  handleLoginWithCode = async(e, email, code) => {
-    const payload = { email: email, token: code};
+  handleLoginWithCode = async(e) => {
+    e.preventDefault();
+    const payload = {
+      email: this.email,
+      token: document.getElementById('code-from-email').value,
+    };
     const signup = await simple.authenticate(payload);
+    if (signup.message = 'user session created') {
+      const bstackSession = await simple.getBlockstackSession()
+      console.log('bstackSession:\n-------------------------------------------')
+      console.log(bstackSession)
+      await this.setState({ userSession: bstackSession, signedin: true, pending: false });
+      document.getElementById('evil-container').style.display = "block";
+    }
   }
 
   handleLogIn = async(e) => {
@@ -215,6 +249,13 @@ class App extends React.Component {
   }
 
   getPage = (aPageName, theUserSession, theContent) => {
+    console.log(`getPage toothache:`)
+    console.log('aPageName')
+    console.log(aPageName)
+    console.log('theUserSession')
+    console.log(theUserSession)
+    console.log('theContent')
+    console.log(theContent)
     switch (aPageName) {
       case 'blockstack':
         return (
@@ -255,6 +296,7 @@ class App extends React.Component {
       color: "#fff",
     }
     if(userSession.isUserSignedIn()) {
+      console.log('Show all the actual stuff.')
       return (
         <div className="wrapper">
           {this.renderBanner(true)}
@@ -266,7 +308,7 @@ class App extends React.Component {
             <h4 style={{color: "#fff"}}>Signed-in as {userSession.loadUserData().username}</h4>
           </div>
 
-          <div className="container">
+          <div id='evil-container' className="container">
             <div className="tabs">
               <ul style={{position: "relative", zIndex: "999"}}>
                 <li style={page === "ethereumTodo" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereumTodo" })}>Ethereum</li>
@@ -291,7 +333,8 @@ class App extends React.Component {
           <div className="container">
             <h1>Just a moment...</h1>
             <h2 style={{fontStyle:'italic'}}>{loadingMessage}</h2>
-            <div style={{display:"inline-block", margin:"auto"}}>
+            <div style={{display:"inline-block", marginTop:10, marginLeft:'auto', marginRight:'auto', marginBottom:'auto'}}>
+            {/*<div style={{display:"inline-block", margin:'auto'}}>*/}
               <BarLoader
                 sizeUnit={"px"}
                 height={5}
@@ -301,12 +344,13 @@ class App extends React.Component {
               />
             </div>
 
-            {this.renderFooter()}
           </div>
 
+          {this.renderFooter()}
         </div>
       )
     } else {
+      console.log("Should sign in up stuff!")
       return (
         <div className="wrapper">
           {this.renderBanner()}
@@ -320,8 +364,9 @@ class App extends React.Component {
             <form className="form">
               <h2>Please Sign In:</h2>
               <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-in-fields">Please fill in all fields:</span>
-              <input id="username-input" type="text" placeholder="Username"/>
-              <input id="password-input" type="password" placeholder="Password"/>
+              {/*<input id="username-input" type="text" placeholder="Username"/>
+              <input id="password-input" type="password" placeholder="Password"/>*/}
+              <input id="email-input" type="email" placeholder="Email"/>
               <div style={{display: "none", margin: "15px", fontWeight: "600"}} id="log-in-recovery">
                 <h4>Looks like this is a new device or it's been a while since you logged in. You'll have to enter your email address as well to log in.</h4>
                 <input style={{marginTop: "15px"}} id="email-input" type="email" placeholder="Email"/>
@@ -333,17 +378,33 @@ class App extends React.Component {
 
           <div id="sign-up" className="container">
             <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
+            <div style={{marginTop:30, background:'darkgray', borderStyle:'solid', borderWidth:1, borderColor:'lightgray', borderRadius:10}}>
+              <form className="form">
+                <h2>Please Sign Up/In:</h2>
+                <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
+                <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-up-fields">Please fill in all fields:</span>
+                {/* <input id="username-input-sign-up" type="text" placeholder="Username" />
+                <input id="password-input-sign-up" type="password" placeholder="Password"/> */}
+                <input id="email-input-sign-up" type="email" placeholder="Email"/>
+                <button onClick={this.handleSignUp} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
+                {/*<h3>... or <a className="active" onClick={this.loginForm}>Sign In</a> to your account.</h3>*/}
+              </form>
+            </div>
+          </div>
 
-            <form className="form">
-              <h2>Please Sign Up:</h2>
-              <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
-              <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-up-fields">Please fill in all fields:</span>
-              <input id="username-input-sign-up" type="text" placeholder="Username" />
-              <input id="password-input-sign-up" type="password" placeholder="Password"/>
-              <input id="email-input-sign-up" type="email" placeholder="Email"/>
-              <button onClick={this.handleSignUp} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
-              <h3>... or <a className="active" onClick={this.loginForm}>Sign In</a> to your account.</h3>
-            </form>
+          <div id="enter-code"  style={{display: "none"}} className="container">
+            <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
+            <div style={{marginTop:30, background:'darkgray', borderStyle:'solid', borderWidth:1, borderColor:'lightgray', borderRadius:10}}>
+              <form className="form">
+                <h2>Please enter the code you were emailed ...</h2>
+                <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-enter-code-fields">Please fill in all fields:</span>
+                {/* <input id="username-input-sign-up" type="text" placeholder="Username" />
+                <input id="password-input-sign-up" type="password" placeholder="Password"/> */}
+                <input id="code-from-email" type="text" autocomplete="off" placeholder="Code from email"/>
+                <button onClick={this.handleLoginWithCode} style={{display:'block', margin:'auto'}} type="submit" id="code-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign in" /></button>
+                {/*<h3>... or <a className="active" onClick={this.loginForm}>Sign In</a> to your account.</h3>*/}
+              </form>
+            </div>
           </div>
 
           {this.renderFooter()}

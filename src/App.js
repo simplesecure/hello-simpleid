@@ -2,16 +2,26 @@ import React from 'react';
 import { UserSession, AppConfig } from 'blockstack';
 import './App.css';
 import logo from './white-logo.png';
-import { login, createUserAccount } from 'simpleid-js-sdk';
+//import { login, createUserAccount } from 'simpleid-js-sdk';
 import signupButton from './hellosignup.png';
-import signinButton from './hellosignIn.png';
+import signinButton from './hellosignin.png';
 import BlockstackPage from './BlockstackPage';
 import EthereumPage from './EthereumPage';
 import EthereumTodoPage from './EthereumTodoPage';
 import PinataPage from './IPFSPage';
 import BarLoader from 'react-spinners/BarLoader';
+import SimpleID from 'simpleid-js-sdk';
 const {simpleIDKeys} = require('./keys');
-
+const simple = new SimpleID({
+  appOrigin: "https://app.graphitedocs.com",
+  scopes: ['store_write', 'publish_data'],
+  apiKey: "123456",
+  devId: "justin.email.email@email.com",
+  appName: "Graphite", 
+  development: true, 
+  network: 'layer2', 
+  localRPCServer: 'http://localhost:7545'
+});
 const appObj = {
   appOrigin: window.location.origin,
   scopes: ['store_write', 'publish_data'],
@@ -58,7 +68,7 @@ class App extends React.Component {
   }
 
 
-  handleSignUp = async (e) => {
+  handleSignUp = async (e, code) => {
     e.preventDefault();
     document.getElementById('name-error').style.display = "none";
     document.getElementById('error-sign-up-fields').style.display = "none";
@@ -86,7 +96,9 @@ class App extends React.Component {
        statusCallbackFn: this.statusCallbackFn,
        passwordless: true
     }
-    const signup = await createUserAccount(credObj, appObj, options)
+    //const signup = await createUserAccount(credObj, appObj, options)
+    const payload = { email: credObj.email};
+    const signup = await simple.authenticate(payload);
     console.log(signup);
     if(signup.message === "name taken") {
       this.setState({ pending: false });
@@ -109,6 +121,11 @@ class App extends React.Component {
         console.log(signup);
       }
     }
+  }
+
+  handleLoginWithCode = async(e, email, code) => {
+    const payload = { email: email, token: code};
+    const signup = await simple.authenticate(payload);
   }
 
   handleLogIn = async(e) => {
@@ -137,7 +154,7 @@ class App extends React.Component {
       credObj,
       appObj
     }
-    const signin = await login(params);
+    const signin = {}//await login(params);
 
     if(signin.message === "Need to go through recovery flow") {
       this.setState({ pending: false });

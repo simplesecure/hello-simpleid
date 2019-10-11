@@ -1,5 +1,5 @@
 import React from 'react';
-import { pinContent, fetchPinnedContent } from 'simpleid-js-sdk';
+//import { pinContent, fetchPinnedContent } from 'simpleid-js-sdk';
 import { simpleIDKeys } from './keys';
 
 const GROWL_DISPLAY_STYLE = 'flex'
@@ -36,7 +36,7 @@ export default class IPFSPage extends React.Component {
     document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
     document.getElementById('growl-p').innerText = "Adding content to IPFS...";
     if(title && content) {
-      const pinnedContent = await pinContent(params);
+      const pinnedContent = {}//await pinContent(params);
       if(pinnedContent) {
         console.log(pinnedContent);
         document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
@@ -65,7 +65,7 @@ export default class IPFSPage extends React.Component {
     }
     document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
     document.getElementById('growl-p').innerText = "Fetching content from IPFS...";
-    const fetchedContent = await fetchPinnedContent(params);
+    const fetchedContent = {}//await fetchPinnedContent(params);
     if(fetchedContent) {
       console.log(fetchedContent);
       document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;

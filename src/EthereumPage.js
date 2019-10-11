@@ -1,5 +1,5 @@
 import React from 'react';
-import { createContract, fetchContract } from 'simpleid-js-sdk';
+//import { createContract, fetchContract } from 'simpleid-js-sdk';
 import { simpleIDKeys } from './keys';
 const abi = [
   "event ValueChanged(address indexed author, string oldValue, string newValue)",
@@ -78,7 +78,7 @@ export default class EthereumPage extends React.Component {
       }
       document.getElementById('growl').style.display = "block";
       document.getElementById('growl-p').innerText = "Deploying contract...";
-      const contract = await createContract(params);
+      const contract = {}//await createContract(params);
       console.log(contract);
       if(contract.message === "failed to create contract") {
         document.getElementById('growl').style.display = "block";
@@ -106,7 +106,7 @@ export default class EthereumPage extends React.Component {
     }
     document.getElementById('growl').style.display = "block";
     document.getElementById('growl-p').innerText = "Fetching contract...";
-    const contract = await fetchContract(params);
+    const contract = {}//await fetchContract(params);
     console.log(contract);
     if(contract.message === "retreived contract and executed") {
       document.getElementById('growl').style.display = "block";

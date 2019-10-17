@@ -2,12 +2,12 @@ import React from 'react';
 import { UserSession, AppConfig } from 'blockstack';
 import logo from './white-logo.png';
 //import { login, createUserAccount } from 'simpleid-js-sdk';
-import signupButton from './hellosignup.png';
-import signinButton from './hellosignin.png';
-import BlockstackPage from './BlockstackPage';
-import EthereumPage from './EthereumPage';
-import EthereumTodoPage from './EthereumTodoPage';
-import PinataPage from './IPFSPage';
+// import signupButton from './hellosignup.png';
+// import signinButton from './hellosignin.png';
+// import BlockstackPage from './BlockstackPage';
+// import EthereumPage from './EthereumPage';
+// import EthereumTodoPage from './EthereumTodoPage';
+// import PinataPage from './IPFSPage';
 import BarLoader from 'react-spinners/BarLoader';
 import SimpleID from 'simpleid-js-sdk';
 
@@ -55,9 +55,6 @@ class App extends React.Component {
       uiState: (userSession.isUserSignedIn()) ? STATES.SIGNED_IN : STATES.SIGN_IN_UP,
       loadingMessage: "",
       userSession: {},
-      signedin: false,
-      content: "",
-      pending: false,
       page: "ethereumTodo",
     }
 
@@ -65,7 +62,7 @@ class App extends React.Component {
   }
 
   statusCallbackFn = (aStatusMessage) => {
-    this.setState( { uiState:STATES.PENDING, loadingMessage:aStatusMessage } )
+    this.setState( { loadingMessage:aStatusMessage } )
   }
 
   handleSignUp = async (e) => {
@@ -130,6 +127,10 @@ class App extends React.Component {
     const signup = await simple.authenticate(payload);
     if (signup.message = 'user session created') {
       const bstackSession = await simple.getBlockstackSession()
+      const userData = await simple.getUserData()
+      console.log('userData:')
+      console.log(userData)
+      console.log()
       await this.setState({ uiState: STATES.SIGNED_IN, userSession: bstackSession });
     }
   }
@@ -159,8 +160,7 @@ class App extends React.Component {
 
   renderWelcome()
   {
-    const loadingMessage = 'Hello ...'
-    const pending = true
+    const loadingMessage = this.state.loadingMessage
 
     let welcomeContent = undefined
     switch (this.state.uiState) {
@@ -186,7 +186,7 @@ class App extends React.Component {
               height={5}
               width={100}
               color={'white'}
-              loading={pending}
+              loading={true}
             />
           </div>
         )
@@ -197,7 +197,7 @@ class App extends React.Component {
           <Form>
             <Form.Group controlId="sign-up-in-email">
               <Form.Label>Enter an e-mail that you have access to here, and we will e-mail you a one time use 6 digit code:</Form.Label>
-              <Form.Control type="email" size="md" autocomplete="off" placeholder="email.address@example.com" />
+              <Form.Control type="email" size="md" placeholder="email.address@example.com" />
               <Form.Text className="text-muted">
               * We will not use this e-mail for marketing purposes unless you
               indicate your interest in the app.
@@ -232,16 +232,85 @@ class App extends React.Component {
   {
     return (
       <div className="page">
-        Account
+        <div className="page-section">
+          <Jumbotron>
+            <h2>
+              Congratulations! That is the experience your users will have when logging in to your dApps.
+            </h2>
+            <br/>
+            <h4>
+              Below, we've outlined what Simple ID creates for each user to get them participating with blockchain technologies in your dApps.
+            </h4>
+          </Jumbotron>
+        </div>
+
+        <div className="page-section">
+          <h2>Learn More</h2>
+          <p>
+            Click the button below if you want to learn more about Simple ID. It will open a pre-formatted email.
+          </p>
+          <Button variant="info" type="submit" size="md" onClick={()=>{}}>
+            Learn More
+          </Button>
+        </div>
+
+        <div className="page-section">
+          <h2>One-Time Codes</h2>
+          <p>
+            Standard TOTP / HOTP one-time codes are used for:
+          </p>
+          <ul>
+            <li>Creating accounts.</li>
+            <li>Signing into accounts.</li>
+            <li>Approving crypto transactions.</li>
+          </ul>
+          <p>
+            The codes are scoped to the dApp being used by the user and expire within 5 minutes of being generated. Codes can be received via email and SMS.
+          </p>
+          <p>
+            Learn more about TOTP / HOTP codes here: &lt;TODO link&gt;
+          </p>
+        </div>
+
+        <div className="page-section">
+          <h2>App Specific Encryption</h2>
+          <p>
+            Simple ID uses ECIES Encryption technology with key pairs unique to each user and application. This means that if an encryption key is ever compromised, breaches do not spread to other users or applications using Simple ID.
+          </p>
+          <p>
+            Key pairs for both encryption and signing are provided.
+          </p>
+        </div>
+
+        <div className="page-section">
+          <h2>Blockchain Wallets</h2>
+          <p>
+            Simple ID creates Blockchain wallets for each of your users automatically to help you give them a place to sent and receive money for crypto tranactions:
+          </p>
+          <ul>
+            <li>Bitcoin Wallet Address: TODO</li>
+            <li>Ethereum Wallet Address: TODO</li>
+            <li>Stax Wallet Address: TODO</li>
+          </ul>
+          <p>
+            Transactions with these wallets can only be approved by the user through a one-time code mechanism similar to that used for signign in / up.
+          </p>
+        </div>
       </div>
     )
   }
 
   render()
   {
-    console.log('render:')
-    console.log(this.state.uiState)
-
+    console.log('userSession:')
+    console.log(userSession)
+    console.log()
+    if (userSession.isUserSignedIn()) {
+      console.log('userData:')
+      const ud = userSession.loadUserData()
+      console.log(ud)
+      console.log()
+    }
     let contentArea = undefined
     switch (this.state.uiState) {
       case STATES.SIGNED_IN:

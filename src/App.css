@@ -82,8 +82,7 @@ body :-ms-input-placeholder {
   text-align: 'center';
 }
 .wrapper {
-  background: #50a3a2;
-  background: linear-gradient(to bottom right, #003dff 0%, #c0cfff 100%);
+  background: linear-gradient(to bottom right, black 40%, white 100%);
   position: absolute;
   top: 0;
   left: 0;

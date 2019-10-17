@@ -1,6 +1,5 @@
 import React from 'react';
 import { UserSession, AppConfig } from 'blockstack';
-import './App.css';
 import logo from './white-logo.png';
 //import { login, createUserAccount } from 'simpleid-js-sdk';
 import signupButton from './hellosignup.png';
@@ -11,7 +10,13 @@ import EthereumTodoPage from './EthereumTodoPage';
 import PinataPage from './IPFSPage';
 import BarLoader from 'react-spinners/BarLoader';
 import SimpleID from 'simpleid-js-sdk';
+
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import Jumbotron from 'react-bootstrap/Jumbotron'
+
 const {simpleIDKeys} = require('./keys');
+
 const simple = new SimpleID({
   appOrigin: "https://www.simpleid.xyz/hello",
   scopes: ['store_write', 'publish_data'],
@@ -22,16 +27,6 @@ const simple = new SimpleID({
   network: 'layer2',
   localRPCServer: 'http://localhost:7545'
 });
-// const simple = new SimpleID({
-//   appOrigin: "https://app.graphitedocs.com",
-//   scopes: ['store_write', 'publish_data'],
-//   apiKey: "123456",
-//   devId: "justin.email.email@email.com",
-//   appName: "Graphite",
-//   development: true,
-//   network: 'layer2',
-//   localRPCServer: 'http://localhost:7545'
-// });
 const appObj = {
   appOrigin: window.location.origin,
   scopes: ['store_write', 'publish_data'],
@@ -45,49 +40,38 @@ const userSession = new UserSession({ appConfig });
 const GROWL_DISPLAY_STYLE = 'flex'
 const GROWL_DELAY = 5000 // ms
 
+
+const STATES = {
+  SIGN_IN_UP: 0,
+  PENDING: 1,
+  CODE_AUTH: 2,
+  SIGNED_IN: 3,
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      uiState: (userSession.isUserSignedIn()) ? STATES.SIGNED_IN : STATES.SIGN_IN_UP,
+      loadingMessage: "",
       userSession: {},
       signedin: false,
       content: "",
-      activeClass: "signup",
       pending: false,
       page: "ethereumTodo",
-      loadingMessage: "",
     }
 
     this.email = undefined
   }
 
-  loginForm = () => {
-    this.setState({ activeClass: "signin" });
-    document.getElementById('log-in').style.display = "block";
-    document.getElementById('sign-up').style.display = "none";
-    document.getElementById('enter-code').style.display = "none";
-    document.getElementById('error-sign-in-fields').style.display = "none";
-  }
-
-  signupForm = () => {
-    this.setState({ activeClass: "signup" });
-    document.getElementById('log-in').style.display = "none";
-    document.getElementById('sign-up').style.display = "block";
-    document.getElementById('enter-code').style.display = "none";
-    document.getElementById('error-sign-up-fields').style.display = "none";
-  }
-
   statusCallbackFn = (aStatusMessage) => {
-    this.setState( { pending:true, loadingMessage:aStatusMessage } )
+    this.setState( { uiState:STATES.PENDING, loadingMessage:aStatusMessage } )
   }
-
 
   handleSignUp = async (e) => {
     e.preventDefault();
-    document.getElementById('name-error').style.display = "none";
-    document.getElementById('error-sign-up-fields').style.display = "none";
 
-    this.email = document.getElementById('email-input-sign-up').value
+    this.email = document.getElementById('sign-up-in-email').value
     const credObj = {
       // id: document.getElementById('username-input-sign-up').value,
       // password: document.getElementById('password-input-sign-up').value,
@@ -98,50 +82,40 @@ class App extends React.Component {
     // Error check
     let error = false
     if (!credObj.email) {
-      document.getElementById('error-sign-up-fields').style.display = "block";
+      console.log('TODO: error report - no email found / specified.')
       error = true
     }
     if (error) {
       return
     }
 
-    this.setState({ pending: true });
+    this.setState({ uiState: STATES.PENDING });
 
     const options = {
        statusCallbackFn: this.statusCallbackFn,
        passwordless: true
     }
-    //const signup = await createUserAccount(credObj, appObj, options)
     const payload = { email: credObj.email};
     const signup = await simple.authenticate(payload);
-    console.log(signup);
     if(signup.message === "name taken") {
-      this.setState({ pending: false });
-      await this.signupForm();
-      document.getElementById('name-error').style.display = "block";
+      this.setState({ uiState: STATES.SIGN_IN_UP });
+      console.log('TODO: report name error')
     } else if (signup.message === "Approval email sent") {
-      this.setState({ pending: false });
-      document.getElementById('name-error').style.display = "none";
-      document.getElementById('error-sign-up-fields').style.display = "none";
-
-      document.getElementById('log-in').style.display = "none";
-      document.getElementById('sign-up').style.display = "none";
-      document.getElementById('enter-code').style.display = "block";
+      this.setState({ uiState: STATES.CODE_AUTH });
+      console.log('TODO: show login code field')
     } else {
       // localStorage.setItem('blockstack-session', JSON.stringify(signup.body.store.sessionData));
-      if(signup.message === "Need to go through recovery flow") {
-        document.getElementById('log-in-recovery').style.display = "block";
-      } else if(signup.message === "user session created") {
-        this.setState({ userSession: signup.body, signedin: true, pending: false });
+      if(signup.message === "user session created") {
+        this.setState({ uiState: STATES.SIGNED_IN, userSession: signup.body });
       } else {
-        this.setState({ pending: false });
-        document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
-        document.getElementById('growl-p').innerText = "Trouble signing up";
-        setTimeout(() => {
-          document.getElementById('growl').style.display = "none";
-          document.getElementById('growl-p').innerText = "";
-        }, GROWL_DELAY)
-        console.log(signup);
+        this.setState({ uiState: STATES.SIGN_IN_UP });
+        console.log('TODO: show trouble signing up')
+        // document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
+        // document.getElementById('growl-p').innerText = "Trouble signing up";
+        // setTimeout(() => {
+        //   document.getElementById('growl').style.display = "none";
+        //   document.getElementById('growl-p').innerText = "";
+        // }, GROWL_DELAY)
       }
     }
   }
@@ -152,266 +126,251 @@ class App extends React.Component {
       email: this.email,
       token: document.getElementById('code-from-email').value,
     };
+
     const signup = await simple.authenticate(payload);
     if (signup.message = 'user session created') {
       const bstackSession = await simple.getBlockstackSession()
-      console.log('bstackSession:\n-------------------------------------------')
-      console.log(bstackSession)
-      await this.setState({ userSession: bstackSession, signedin: true, pending: false });
-      document.getElementById('evil-container').style.display = "block";
+      await this.setState({ uiState: STATES.SIGNED_IN, userSession: bstackSession });
     }
   }
 
-  handleLogIn = async(e) => {
-    e.preventDefault();
-    document.getElementById('name-error').style.display = "none";
-    document.getElementById('error-sign-in-fields').style.display = "none";
-
-    const credObj = {
-      id: document.getElementById('username-input').value,
-      password: document.getElementById('password-input').value,
-      hubUrl: "https://hub.blockstack.org"
-    }
-
-    // Error check
-    let error = false
-    if (!credObj.id) {
-      document.getElementById('error-sign-in-fields').style.display = "block";
-      error = true
-    }
-    if (error) {
-      return
-    }
-    this.setState({ pending: true });
-
-    const params = {
-      credObj,
-      appObj
-    }
-    const signin = {}//await login(params);
-
-    if(signin.message === "Need to go through recovery flow") {
-      this.setState({ pending: false });
-      document.getElementById('log-in-recovery').style.display = "block";
-    } else if(signin.message === "user session created") {
-      localStorage.setItem('blockstack-session', JSON.stringify(signin.body.store.sessionData));
-      const appConfig = new AppConfig(appObj.scopes);
-      const userSession = new UserSession({ appConfig });
-      this.setState({ userSession, signedin: true, pending: false });
-    } else if (signin.message === "invalid password" ||
-               signin.message === "error creating app keys") {
-      this.setState({ pending: false });
-      document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
-      document.getElementById('growl-p').innerText = "Invalid password";
-      setTimeout(() => {
-        document.getElementById('growl').style.display = "none";
-        document.getElementById('growl-p').innerText = "";
-      }, GROWL_DELAY)
-    } else {
-      this.setState({ pending: false });
-      document.getElementById('growl').style.display = GROWL_DISPLAY_STYLE;
-      document.getElementById('growl-p').innerText = "Trouble signing in";
-      setTimeout(() => {
-        document.getElementById('growl').style.display = "none";
-        document.getElementById('growl-p').innerText = "";
-      }, GROWL_DELAY)
-      console.log(signin);
-    }
+  handlSignOut = (event) =>
+  {
+    event.preventDefault()
+    localStorage.removeItem('blockstack-session')
+    window.location.reload()
   }
 
-  signOut = (e) => {
-    e.preventDefault();
-    localStorage.removeItem('blockstack-session');
-    window.location.reload();
-  }
-
-  renderBanner(isSignedIn=false) {
-    const signOutButton = isSignedIn ?
-      ( <button
-          style={{width:'auto', margin:'auto 0px auto auto'}}
-          className="on-white"
-          onClick={this.signOut}>Sign Out</button> ) : undefined
+  renderBanner(isSignedIn=false)
+  {
+    const handlSignOutButton = isSignedIn ?
+      ( <Button variant="info" size="md" onClick={this.handlSignOut}>Sign Out</Button> ) :
+      undefined
 
     return (
       <div className="banner">
-        <img src={logo} alt="simpleid" />
-        {signOutButton}
+        <div className="banner-content">
+          <img className="banner-logo" src={logo} alt="Simple ID" />
+          {handlSignOutButton}
+        </div>
       </div>
     )
   }
 
-  renderFooter() {
-    return (
-      <div id="footer">
-        <h3 style={{fontWeight:'bold'}}>Add SimpleID to your App, free <a href="https://app.simpleid.xyz/?t=demo_app" target="_blank" rel="noreferrer noopener">here</a>.</h3>
-      </div>
-    )
-  }
+  renderWelcome()
+  {
+    const loadingMessage = 'Hello ...'
+    const pending = true
 
-  getPage = (aPageName, theUserSession, theContent) => {
-    console.log(`getPage toothache:`)
-    console.log('aPageName')
-    console.log(aPageName)
-    console.log('theUserSession')
-    console.log(theUserSession)
-    console.log('theContent')
-    console.log(theContent)
-    switch (aPageName) {
-      case 'blockstack':
-        return (
-          <BlockstackPage
-            userSession={theUserSession} content={theContent}/> )
+    let welcomeContent = undefined
+    switch (this.state.uiState) {
+      case STATES.CODE_AUTH:
+        welcomeContent = (
+          <Form>
+            <Form.Group controlId="code-from-email">
+              <Form.Label>Enter the 6 digit code one-time code you received via email:</Form.Label>
+              <Form.Control type="number" size="md" autocomplete="off" placeholder="******" />
+            </Form.Group>
+            <Button variant="info" type="submit" size="md" onClick={this.handleLoginWithCode}>
+              Submit
+            </Button>
+          </Form>
+        )
         break;
-      case 'ipfs':
-        return (
-          <PinataPage userSession={theUserSession}/> )
+      case STATES.PENDING:
+        welcomeContent = (
+          <div className="activity-indicator">
+            <h4 style={{fontStyle:'italic'}}>{loadingMessage}</h4>
+            <BarLoader
+              sizeUnit={"px"}
+              height={5}
+              width={100}
+              color={'white'}
+              loading={pending}
+            />
+          </div>
+        )
         break;
-      case 'ethereum':
-        // return (
-        //   <EthereumPage userSession={theUserSession}/> )
-        // break;
-      case 'ethereumTodo':
-        return (
-          <EthereumTodoPage userSession={theUserSession}/> )
+      case STATES.SIGN_IN_UP:
       default:
-        return ( <div /> )
+        welcomeContent = (
+          <Form>
+            <Form.Group controlId="sign-up-in-email">
+              <Form.Label>Enter an e-mail that you have access to here, and we will e-mail you a one time use 6 digit code:</Form.Label>
+              <Form.Control type="email" size="md" autocomplete="off" placeholder="email.address@example.com" />
+              <Form.Text className="text-muted">
+              * We will not use this e-mail for marketing purposes unless you
+              indicate your interest in the app.
+              </Form.Text>
+            </Form.Group>
+            <Button variant="info" type="submit" size="md" onClick={this.handleSignUp}>
+              Sign Up / In
+            </Button>
+          </Form>
+        )
     }
+
+    return (
+      <div className="page">
+        <div className="page-section">
+          <Jumbotron>
+            <h2>
+              Welcome to SimpleID's example experience!
+            </h2>
+            <p>
+              This hello world application shows you the power of a simple passwordless login
+              to access the blockchain.
+            </p>
+            {welcomeContent}
+          </Jumbotron>
+        </div>
+      </div>
+    )
   }
 
-  render() {
-    //console.log(simpleIDKeys());
-    let { activeClass, pending, content, page, loadingMessage } = this.state;
-
-    const activeTab = {
-      background: "#fff",
-      color: "#809eff",
-      borderStyle: 'solid',
-      borderWidth: 1,
-      borderColor: '#dadada',
-      borderBottomColor: '#fff',
-      marginBottom: -1
-    };
-    const inactiveTab = {
-      background: "#809eff",
-      color: "#fff",
-    }
-    if(userSession.isUserSignedIn()) {
-      console.log('Show all the actual stuff.')
-      return (
-        <div className="wrapper">
-          {this.renderBanner(true)}
-
-          <div style={{display: "none"}} id="dimmer"></div>
-          <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
-
-          <div className="container" style={{flex:'none', paddingTop:0}}>
-            <h4 style={{color: "#fff"}}>Signed-in as {userSession.loadUserData().username}</h4>
-          </div>
-
-          <div id='evil-container' className="container">
-            <div className="tabs">
-              <ul style={{position: "relative", zIndex: "999"}}>
-                <li style={page === "ethereumTodo" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereumTodo" })}>Ethereum</li>
-                {/*<li style={page === "ethereum" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereum" })}>Ethereum Example</li>*/}
-                <li style={page === "ipfs" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ipfs" })}>IPFS</li>
-                <li style={page === "blockstack" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "blockstack" })}>Blockstack</li>
-              </ul>
-            </div>
-            <div className="card">{this.getPage(page, userSession, content)}</div>
-          </div>
-
-          {this.renderFooter()}
-        </div>
-      );
-    } else if(pending) {
-      return (
-        <div className="wrapper">
-          {this.renderBanner()}
-
-          <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
-
-          <div className="container">
-            <h1>Just a moment...</h1>
-            <h2 style={{fontStyle:'italic'}}>{loadingMessage}</h2>
-            <div style={{display:"inline-block", marginTop:10, marginLeft:'auto', marginRight:'auto', marginBottom:'auto'}}>
-            {/*<div style={{display:"inline-block", margin:'auto'}}>*/}
-              <BarLoader
-                sizeUnit={"px"}
-                height={5}
-                width={100}
-                color={'white'}
-                loading={pending}
-              />
-            </div>
-
-          </div>
-
-          {this.renderFooter()}
-        </div>
-      )
-    } else {
-      console.log("Should sign in up stuff!")
-      return (
-        <div className="wrapper">
-          {this.renderBanner()}
-
-          <div style={{display: "none"}} id="dimmer"></div>
-          <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
-
-          <div style={{display: "none"}} id="log-in" className="container">
-            <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
-
-            <form className="form">
-              <h2>Please Sign In:</h2>
-              <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-in-fields">Please fill in all fields:</span>
-              {/*<input id="username-input" type="text" placeholder="Username"/>
-              <input id="password-input" type="password" placeholder="Password"/>*/}
-              <input id="email-input" type="email" placeholder="Email"/>
-              <div style={{display: "none", margin: "15px", fontWeight: "600"}} id="log-in-recovery">
-                <h4>Looks like this is a new device or it's been a while since you logged in. You'll have to enter your email address as well to log in.</h4>
-                <input style={{marginTop: "15px"}} id="email-input" type="email" placeholder="Email"/>
-              </div>
-              <button onClick={this.handleLogIn} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signinButton} alt="login" /></button>
-              <h3>... or <a className="active" onClick={this.signupForm}>Sign Up</a> to create an account.</h3>
-            </form>
-          </div>
-
-          <div id="sign-up" className="container">
-            <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
-            <div style={{marginTop:30, background:'darkgray', borderStyle:'solid', borderWidth:1, borderColor:'lightgray', borderRadius:10}}>
-              <form className="form">
-                <h2>Please Sign Up/In:</h2>
-                <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
-                <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-up-fields">Please fill in all fields:</span>
-                {/* <input id="username-input-sign-up" type="text" placeholder="Username" />
-                <input id="password-input-sign-up" type="password" placeholder="Password"/> */}
-                <input id="email-input-sign-up" type="email" placeholder="Email"/>
-                <button onClick={this.handleSignUp} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
-                {/*<h3>... or <a className="active" onClick={this.loginForm}>Sign In</a> to your account.</h3>*/}
-              </form>
-            </div>
-          </div>
-
-          <div id="enter-code"  style={{display: "none"}} className="container">
-            <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
-            <div style={{marginTop:30, background:'darkgray', borderStyle:'solid', borderWidth:1, borderColor:'lightgray', borderRadius:10}}>
-              <form className="form">
-                <h2>Please enter the code you were emailed ...</h2>
-                <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-enter-code-fields">Please fill in all fields:</span>
-                {/* <input id="username-input-sign-up" type="text" placeholder="Username" />
-                <input id="password-input-sign-up" type="password" placeholder="Password"/> */}
-                <input id="code-from-email" type="text" autocomplete="off" placeholder="Code from email"/>
-                <button onClick={this.handleLoginWithCode} style={{display:'block', margin:'auto'}} type="submit" id="code-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign in" /></button>
-                {/*<h3>... or <a className="active" onClick={this.loginForm}>Sign In</a> to your account.</h3>*/}
-              </form>
-            </div>
-          </div>
-
-          {this.renderFooter()}
-        </div>
-      );
-    }
+  renderAccount()
+  {
+    return (
+      <div className="page">
+        Account
+      </div>
+    )
   }
+
+  render()
+  {
+    console.log('render:')
+    console.log(this.state.uiState)
+
+    let contentArea = undefined
+    switch (this.state.uiState) {
+      case STATES.SIGNED_IN:
+        contentArea = this.renderAccount()
+        break;
+      case STATES.SIGN_IN_UP:
+      case STATES.PENDING:
+      case STATES.CODE_AUTH:
+      default:
+        contentArea = this.renderWelcome()
+    }
+
+    return (
+      <div className="wrapper-flex">
+        {this.renderBanner(userSession.isUserSignedIn())}
+        {contentArea}
+      </div>
+    )
+  }
+
+
+
+
+
+  // renderOld() {
+  //
+  //   let { pending, content, page, loadingMessage } = this.state;
+  //
+  //   const activeTab = {
+  //     background: "#fff",
+  //     color: "#809eff",
+  //     borderStyle: 'solid',
+  //     borderWidth: 1,
+  //     borderColor: '#dadada',
+  //     borderBottomColor: '#fff',
+  //     marginBottom: -1
+  //   };
+  //   const inactiveTab = {
+  //     background: "#809eff",
+  //     color: "#fff",
+  //   }
+  //   if(userSession.isUserSignedIn()) {
+  //     return (
+  //       <div className="wrapper">
+  //         {this.renderBanner(true)}
+  //
+  //         <div style={{display: "none"}} id="dimmer"></div>
+  //         <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
+  //
+  //         <div className="container" style={{flex:'none', paddingTop:0}}>
+  //           <h4 style={{color: "#fff"}}>Signed-in as {userSession.loadUserData().username}</h4>
+  //         </div>
+  //
+  //         <div id='evil-container' className="container">
+  //           <div className="tabs">
+  //             <ul style={{position: "relative", zIndex: "999"}}>
+  //               <li style={page === "ethereumTodo" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereumTodo" })}>Ethereum</li>
+  //               {/*<li style={page === "ethereum" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ethereum" })}>Ethereum Example</li>*/}
+  //               <li style={page === "ipfs" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "ipfs" })}>IPFS</li>
+  //               <li style={page === "blockstack" ? activeTab : inactiveTab} onClick={() => this.setState({ page: "blockstack" })}>Blockstack</li>
+  //             </ul>
+  //           </div>
+  //           <div className="card">{this.getPage(page, userSession, content)}</div>
+  //         </div>
+  //
+  //       </div>
+  //     );
+  //   } else if(pending) {
+  //     return (
+  //       <div className="wrapper">
+  //         {this.renderBanner()}
+  //
+  //         <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
+  //
+  //         <div className="container">
+  //           <h1>Just a moment...</h1>
+  //           <h2 style={{fontStyle:'italic'}}>{loadingMessage}</h2>
+  //           <div style={{display:"inline-block", marginTop:10, marginLeft:'auto', marginRight:'auto', marginBottom:'auto'}}>
+  //           {/*<div style={{display:"inline-block", margin:'auto'}}>*/}
+  //             <BarLoader
+  //               sizeUnit={"px"}
+  //               height={5}
+  //               width={100}
+  //               color={'white'}
+  //               loading={pending}
+  //             />
+  //           </div>
+  //
+  //         </div>
+  //
+  //       </div>
+  //     )
+  //   } else {
+  //     return (
+  //       <div className="wrapper">
+  //         {this.renderBanner()}
+  //
+  //         <div style={{display: "none"}} id="dimmer"></div>
+  //         <div style={{display: "none"}} id="growl"><p id="growl-p"></p></div>
+  //
+  //         <div id="sign-up" className="container">
+  //           <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
+  //           <div style={{marginTop:30, background:'darkgray', borderStyle:'solid', borderWidth:1, borderColor:'lightgray', borderRadius:10}}>
+  //             <form className="form">
+  //               <h2>Please Sign Up/In:</h2>
+  //               <span style={{display: "none"}} id="name-error">Sorry, that name is taken. Try another!</span>
+  //               <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-sign-up-fields">Please fill in all fields:</span>
+  //               <input id="email-input-sign-up" type="email" placeholder="Email"/>
+  //               <button onClick={this.handleSignUp} style={{display:'block', margin:'auto'}} type="submit" id="login-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign up" /></button>
+  //             </form>
+  //           </div>
+  //         </div>
+  //
+  //         <div id="enter-code"  style={{display: "none"}} className="container">
+  //           <h1 style={{textAlign: 'center'}}>Welcome to SimpleID's example experience!</h1>
+  //           <div style={{marginTop:30, background:'darkgray', borderStyle:'solid', borderWidth:1, borderColor:'lightgray', borderRadius:10}}>
+  //             <form className="form">
+  //               <h2>Please enter the code you were emailed ...</h2>
+  //               <span style={{display: "none", textAlign: 'center', color:'red', fontFamily:'sans-serif', fontWeight:'bold', fontSize:'large'}} id="error-enter-code-fields">Please fill in all fields:</span>
+  //               <input id="code-from-email" type="text" autocomplete="off" placeholder="Code from email"/>
+  //               <button onClick={this.handleLoginWithCode} style={{display:'block', margin:'auto'}} type="submit" id="code-button" className="link-button"><img className="auth-button" src={signupButton} alt="sign in" /></button>
+  //             </form>
+  //           </div>
+  //         </div>
+  //
+  //       </div>
+  //     );
+  //   }
+  // }
 }
 
 export default App;

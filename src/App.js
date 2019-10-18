@@ -11,9 +11,15 @@ import logo from './white-logo.png';
 import BarLoader from 'react-spinners/BarLoader';
 import SimpleID from 'simpleid-js-sdk';
 
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
-import Jumbotron from 'react-bootstrap/Jumbotron'
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Form,
+  Jumbotron,
+  Row
+} from 'react-bootstrap'
 
 const {simpleIDKeys} = require('./keys');
 
@@ -56,6 +62,7 @@ class App extends React.Component {
       loadingMessage: "",
       userSession: {},
       page: "ethereumTodo",
+      show: false
     }
 
     this.email = undefined
@@ -145,7 +152,7 @@ class App extends React.Component {
   renderBanner(isSignedIn=false)
   {
     const handlSignOutButton = isSignedIn ?
-      ( <Button variant="info" size="md" onClick={this.handlSignOut}>Sign Out</Button> ) :
+      ( <Button variant="danger" size="md" onClick={this.handlSignOut}>Sign Out</Button> ) :
       undefined
 
     return (
@@ -228,73 +235,185 @@ class App extends React.Component {
     )
   }
 
+  privateDismissibleExample() {
+    if (this.state.show) {
+      return (
+        <Alert variant="danger" onClose={() => this.setState({show: false})} dismissible>
+          <Alert.Heading>Your Private Key</Alert.Heading>
+          <p>{userSession.loadUserData().appPrivateKey}</p>
+        </Alert>
+      );
+    }
+    return <Button onClick={() => this.setState({show: true})}>Show My Private Key</Button>;
+  }
+
   renderAccount()
   {
     return (
       <div className="page">
         <div className="page-section">
           <Jumbotron>
-            <h2>
+            <h3>
               Congratulations! That is the experience your users will have when logging in to your dApps.
-            </h2>
+            </h3>
             <br/>
-            <h4>
+            <p>
               Below, we've outlined what Simple ID creates for each user to get them participating with blockchain technologies in your dApps.
-            </h4>
+            </p>
+            <br/>
+            <h2>Get in Touch</h2>
+            <p>
+              Whether you're a large enterprise or a developer, we can help you build and integrate blockchain technology in your application.
+            </p>
+            <Button variant="success" type="submit" size="md" href="mailto:hello@simpleid.xyz">
+              Contact Us!
+            </Button>
           </Jumbotron>
         </div>
 
         <div className="page-section">
-          <h2>Learn More</h2>
-          <p>
-            Click the button below if you want to learn more about Simple ID. It will open a pre-formatted email.
-          </p>
-          <Button variant="info" type="submit" size="md" onClick={()=>{}}>
-            Learn More
-          </Button>
+          <Card>
+            <Card.Header as="h5">One-Time Codes</Card.Header>
+            <Card.Body>
+              <Card.Title>Standard TOTP / HOTP one-time codes are used for:</Card.Title>
+              <Card.Text>
+                <ul>
+                  <li>Creating accounts.</li>
+                  <li>Signing into accounts.</li>
+                  <li>Approving crypto transactions.</li>
+                </ul>
+                <p>
+                  The codes are scoped to the dApp being used by the user and expire within 5 minutes of being generated. Codes can be received via email and SMS.
+                </p>
+              </Card.Text>
+              <Button variant="primary" href="https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm" target="_blank">Learn More</Button>
+            </Card.Body>
+          </Card>
         </div>
 
         <div className="page-section">
-          <h2>One-Time Codes</h2>
-          <p>
-            Standard TOTP / HOTP one-time codes are used for:
-          </p>
-          <ul>
-            <li>Creating accounts.</li>
-            <li>Signing into accounts.</li>
-            <li>Approving crypto transactions.</li>
-          </ul>
-          <p>
-            The codes are scoped to the dApp being used by the user and expire within 5 minutes of being generated. Codes can be received via email and SMS.
-          </p>
-          <p>
-            Learn more about TOTP / HOTP codes here: &lt;TODO link&gt;
-          </p>
+          <Card>
+            <Card.Header as="h5">Bip39 master keychain and security:</Card.Header>
+            <Card.Body>
+              <Card.Title>We use Shamir Secret Sharing to split your master keychain into 3 pieces</Card.Title>
+              <br/>
+              <h6>
+                The three shares can be stored by <i>user, enterprise, and trusted 3rd party</i>. The master keychain is only available when 2 of 3 parties approve,
+                hence avoiding chances of a single bad actor.
+              </h6>
+              <br/>
+              <Alert variant="danger"><i>Complete: robust pipe raise illness symptom crowd trip will slow assault recipe oven</i></Alert>
+              <br/>
+              <Card.Text>
+                <il>
+                  <Alert variant="secondary"><b>Share 1: </b>robust ____ raise _______ symptom crowd ____ will slow assault recipe ____</Alert>
+                </il>
+                <il>
+                  <Alert variant="secondary"><b>Share 2: </b>robust pipe _____ illness symptom _____ trip will slow _______ ______ oven</Alert>
+                </il>
+                <il>
+                  <Alert variant="secondary"><b>Share 3: </b>______ pipe raise illness _______ crowd trip ____ ____ assault recipe oven</Alert>
+                </il>
+              </Card.Text>
+              <Button variant="primary" href="https://wiki.trezor.io/Shamir_Backup#What_happens_if_some_of_the_shares_get_lost_or_stolen.3F" target="_blank">Learn More</Button>
+            </Card.Body>
+          </Card>
         </div>
 
         <div className="page-section">
-          <h2>App Specific Encryption</h2>
-          <p>
-            Simple ID uses ECIES Encryption technology with key pairs unique to each user and application. This means that if an encryption key is ever compromised, breaches do not spread to other users or applications using Simple ID.
-          </p>
-          <p>
-            Key pairs for both encryption and signing are provided.
-          </p>
+          <Card>
+            <Card.Header as="h5">App and user specific encryption keys:</Card.Header>
+            <Card.Body>
+              {/*<Card.Title>Standard TOTP / HOTP one-time codes are used for:</Card.Title>*/}
+              <Card.Text>
+                <p>
+                  Simple ID uses ECIES Encryption technology with key pairs unique to each user and application. This means that if an encryption key is ever compromised, breaches do not spread to other users or applications using Simple ID.
+                </p>
+                <p>
+                  Key pairs for both encryption and signing are provided.
+                </p>
+              </Card.Text>
+              {this.privateDismissibleExample()}
+            </Card.Body>
+          </Card>
         </div>
 
         <div className="page-section">
-          <h2>Blockchain Wallets</h2>
-          <p>
-            Simple ID creates Blockchain wallets for each of your users automatically to help you give them a place to sent and receive money for crypto tranactions:
-          </p>
-          <ul>
-            <li>Bitcoin Wallet Address: TODO</li>
-            <li>Ethereum Wallet Address: TODO</li>
-            <li>Stax Wallet Address: TODO</li>
-          </ul>
-          <p>
-            Transactions with these wallets can only be approved by the user through a one-time code mechanism similar to that used for signign in / up.
-          </p>
+          <Card>
+            <Card.Header as="h5">Blockchain wallets for each of your users is created automatically:</Card.Header>
+            <Card.Body>
+              <Card.Title>
+                Transactions with these wallets can only be approved by the user through a one-time code mechanism similar to that used for signign in / up.
+              </Card.Title>
+              <Card.Text>
+                <Row>
+                  <Col>
+                    <Card border="warning">
+                      <Card.Header>Bitcoin Wallet Address: TODO</Card.Header>
+                      <Card.Body>
+                        <Card.Text>
+                          Some quick example text to build on the card title and make up the bulk
+                          of the card's content.
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                  <Col>
+                    <Card border="primary">
+                      <Card.Header>Ethereum Wallet Address: TODO</Card.Header>
+                      <Card.Body>
+                        <Card.Text>
+                          Some quick example text to build on the card title and make up the bulk
+                          of the card's content.
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                  <Col>
+                    <Card border="info">
+                      <Card.Header>Blockstack Wallet Address: TODO</Card.Header>
+                      <Card.Body>
+                        <Card.Text>
+                          Some quick example text to build on the card title and make up the bulk
+                          of the card's content.
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                </Row>
+              </Card.Text>
+              <Button variant="primary" href="https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm" target="_blank">Learn More</Button>
+            </Card.Body>
+          </Card>
+        </div>
+
+        <div className="page-section">
+          <Card>
+            <Card.Header as="h5">Why should a developer use SimpleID?</Card.Header>
+            <Card.Body>
+              <Card.Title>Here is what a developer needs to do to build a working Ethereum app today:</Card.Title>
+              <Card.Text>
+                <ol>
+                  <li>Setup Infura (or run your own node)</li>
+                  <li>Matic or Loom for layer2</li>
+                  <li>Wyre or Simplex for cyrpto payments</li>
+                  <li>Web3.js or Ethers.js for interacting with the ethereum blockchain</li>
+                  <li>IPFSPinata or Temporal to ensure IPFS data is always available</li>
+                  <li>Metamask for auth</li>
+                  <li>Mailgun or Sendgrid for user notifications</li>
+                  <li>HOTP or TOTP for one-time codes for MFA support</li>
+                  <li>Maintain all of the above........</li>
+                </ol>
+                <br/>
+                <h4>
+                  Or use SimpleID, a one stop solution for all your Blockchain needs!
+                </h4>
+              </Card.Text>
+              <Button variant="success" type="submit" size="md" href="mailto:hello@simpleid.xyz">
+                Contact Us!
+              </Button>
+            </Card.Body>
+          </Card>
         </div>
       </div>
     )

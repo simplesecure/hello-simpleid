@@ -18,9 +18,10 @@ import {
   Col,
   Form,
   Jumbotron,
-  Row
+  Row, 
+  Image
 } from 'react-bootstrap'
-
+import tools from './tools.png';
 const {simpleIDKeys} = require('./keys');
 
 const simple = new SimpleID({
@@ -43,8 +44,8 @@ const appObj = {
 const appConfig = new AppConfig(appObj.scopes);
 const userSession = new UserSession({ appConfig });
 
-const GROWL_DISPLAY_STYLE = 'flex'
-const GROWL_DELAY = 5000 // ms
+//const GROWL_DISPLAY_STYLE = 'flex'
+//const GROWL_DELAY = 5000 // ms
 
 
 const STATES = {
@@ -95,10 +96,10 @@ class App extends React.Component {
 
     this.setState({ uiState: STATES.PENDING });
 
-    const options = {
-       statusCallbackFn: this.statusCallbackFn,
-       passwordless: true
-    }
+    // const options = {
+    //    statusCallbackFn: this.statusCallbackFn,
+    //    passwordless: true
+    // }
     const payload = { email: credObj.email};
     const signup = await simple.authenticate(payload);
     if(signup.message === "name taken") {
@@ -132,13 +133,12 @@ class App extends React.Component {
     };
 
     const signup = await simple.authenticate(payload);
-    if (signup.message = 'user session created') {
-      const bstackSession = await simple.getBlockstackSession()
-      const userData = await simple.getUserData()
+    if (signup.message === 'user session created') {
+      const bstackSession = simple.getBlockstackSession()
+      const userData = simple.getUserData()
       console.log('userData:')
       console.log(userData)
-      console.log()
-      await this.setState({ uiState: STATES.SIGNED_IN, userSession: bstackSession });
+      this.setState({ uiState: STATES.SIGNED_IN, userSession: bstackSession });
     }
   }
 
@@ -203,7 +203,7 @@ class App extends React.Component {
         welcomeContent = (
           <Form>
             <Form.Group controlId="sign-up-in-email">
-              <Form.Label>Enter an e-mail that you have access to here, and we will e-mail you a one time use 6 digit code:</Form.Label>
+              <Form.Label>Enter an e-mail that you have access to here, and we will e-mail you a one-time use 6 digit code:</Form.Label>
               <Form.Control type="email" size="md" placeholder="email.address@example.com" />
               <Form.Text className="text-muted">
               * We will not use this e-mail for marketing purposes unless you
@@ -225,7 +225,7 @@ class App extends React.Component {
               Welcome to SimpleID's example experience!
             </h2>
             <p>
-              This hello world application shows you the power of a simple passwordless login
+              This basic application shows you the power of a simple passwordless login
               to access the blockchain.
             </p>
             {welcomeContent}
@@ -255,16 +255,16 @@ class App extends React.Component {
         <div className="page-section">
           <Jumbotron>
             <h3>
-              Congratulations! That is the experience your users will have when logging in to your dApps.
+              Congratulations! You just saw how easy it can be for your users to log into your blockchain-based application.
             </h3>
             <br/>
             <p>
-              Below, we've outlined what Simple ID creates for each user to get them participating with blockchain technologies in your dApps.
+              But SimpleID gets you so much more than authentication. Below, we've outlined some of the benefits you and your users can expect when you build with us.
             </p>
             <br/>
             <h2>Get in Touch</h2>
             <p>
-              Whether you're a large enterprise or a developer, we can help you build and integrate blockchain technology in your application.
+              Whether you're a large enterprise or a single developer, we can help you build and integrate blockchain technology in your application.
             </p>
             <Button variant="success" type="submit" size="md" href="mailto:hello@simpleid.xyz">
               Contact Us!
@@ -274,17 +274,17 @@ class App extends React.Component {
 
         <div className="page-section">
           <Card>
-            <Card.Header as="h5">One-Time Codes</Card.Header>
+            <Card.Header as="h5">One-time codes</Card.Header>
             <Card.Body>
               <Card.Title>Standard TOTP / HOTP one-time codes are used for:</Card.Title>
               <Card.Text>
                 <ul>
                   <li>Creating accounts.</li>
                   <li>Signing into accounts.</li>
-                  <li>Approving crypto transactions.</li>
+                  <li>Approving blockchain transactions.</li>
                 </ul>
                 <p>
-                  The codes are scoped to the dApp being used by the user and expire within 5 minutes of being generated. Codes can be received via email and SMS.
+                  The codes are scoped to the application being used and expire within 5 minutes of being generated. Codes can be received via email, authenticator app, and SMS.
                 </p>
               </Card.Text>
               <Button variant="primary" href="https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm" target="_blank">Learn More</Button>
@@ -294,13 +294,13 @@ class App extends React.Component {
 
         <div className="page-section">
           <Card>
-            <Card.Header as="h5">Bip39 master keychain and security:</Card.Header>
+            <Card.Header as="h5">Bip39 master keychain and security</Card.Header>
             <Card.Body>
               <Card.Title>We use Shamir Secret Sharing to split your master keychain into 3 pieces</Card.Title>
               <br/>
               <h6>
-                The three shares can be stored by <i>user, enterprise, and trusted 3rd party</i>. The master keychain is only available when 2 of 3 parties approve,
-                hence avoiding chances of a single bad actor.
+                The three shares can be stored by <i>the user, the enterprise, and a trusted 3rd party</i>. The master keychain is only available when 2 of 3 parties approve,
+                thus avoiding chances of a single bad actor.
               </h6>
               <br/>
               <Alert variant="danger"><i>Complete: robust pipe raise illness symptom crowd trip will slow assault recipe oven</i></Alert>
@@ -323,12 +323,12 @@ class App extends React.Component {
 
         <div className="page-section">
           <Card>
-            <Card.Header as="h5">App and user specific encryption keys:</Card.Header>
+            <Card.Header as="h5">App and user specific encryption keys</Card.Header>
             <Card.Body>
               {/*<Card.Title>Standard TOTP / HOTP one-time codes are used for:</Card.Title>*/}
               <Card.Text>
                 <p>
-                  Simple ID uses ECIES Encryption technology with key pairs unique to each user and application. This means that if an encryption key is ever compromised, breaches do not spread to other users or applications using Simple ID.
+                  SimpleID uses ECIES Encryption technology with key pairs unique to each user and application. This means that if an encryption key is ever compromised, breaches do not spread to other users or applications using SimpleID.
                 </p>
                 <p>
                   Key pairs for both encryption and signing are provided.
@@ -341,48 +341,50 @@ class App extends React.Component {
 
         <div className="page-section">
           <Card>
-            <Card.Header as="h5">Blockchain wallets for each of your users is created automatically:</Card.Header>
+            <Card.Header as="h5">Blockchain wallets for each of your users are created automatically</Card.Header>
             <Card.Body>
+
               <Card.Title>
-                Transactions with these wallets can only be approved by the user through a one-time code mechanism similar to that used for signign in / up.
+                Transactions with these wallets can only be approved by the user through a one-time code mechanism similar to that used for signing in / up.
               </Card.Title>
+
               <Card.Text>
                 <Row>
                   <Col>
-                    <Card border="warning">
+                    <Card className="wallets" border="warning">
                       <Card.Header>Bitcoin Wallet Address: {userData.wallet.btcAddr}</Card.Header>
                       <Card.Body>
                         <Card.Text>
-                          Some quick example text to build on the card title and make up the bulk
-                          of the card's content.
+                          See activity for this address <a href={`https://blockexplorer.com/address/${userData.wallet.btcAddr}`} target="_blank" rel="noopener noreferrer">here</a>. 
                         </Card.Text>
                       </Card.Body>
                     </Card>
                   </Col>
                   <Col>
-                    <Card border="primary">
+                    <Card className="wallets" border="primary">
                       <Card.Header>Ethereum Wallet Address: {userData.wallet.ethAddr}</Card.Header>
                       <Card.Body>
                         <Card.Text>
-                          Some quick example text to build on the card title and make up the bulk
-                          of the card's content.
+                          See activity for this address <a href={`https://etherscan.io/address/${userData.wallet.ethAddr}`}>here</a>.
                         </Card.Text>
                       </Card.Body>
                     </Card>
                   </Col>
                   <Col>
-                    <Card border="info">
+                    <Card className="wallets" border="info">
                       <Card.Header>Blockstack Wallet Address: {userData.wallet.stkAddr}</Card.Header>
                       <Card.Body>
                         <Card.Text>
-                          Some quick example text to build on the card title and make up the bulk
-                          of the card's content.
+                          See activity for this address <a href={`https://explorer.blockstack.org/address/stacks/${userData.wallet.stkAddr}`}>here</a>.
                         </Card.Text>
                       </Card.Body>
                     </Card>
                   </Col>
                 </Row>
               </Card.Text>
+              <Card.Body>
+                <Card.Text>You didn't see any activity at any of those addresses did you? That's because they are brand new. Your users can fund their wallets themselves, or SimpleID makes it easy for them to buy cryptocurrency without ever leaving your application.</Card.Text>
+              </Card.Body>
               <Button variant="primary" href="https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm" target="_blank">Learn More</Button>
             </Card.Body>
           </Card>
@@ -390,10 +392,11 @@ class App extends React.Component {
 
         <div className="page-section">
           <Card>
-            <Card.Header as="h5">Why should a developer use SimpleID?</Card.Header>
+            <Card.Header as="h5">Why should you use SimpleID?</Card.Header>
             <Card.Body>
               <Card.Title>Here is what a developer needs to do to build a working Ethereum app today:</Card.Title>
               <Card.Text>
+              <Image src={tools} rounded fluid />
                 <ol>
                   <li>Setup Infura (or run your own node)</li>
                   <li>Matic or Loom for layer2</li>

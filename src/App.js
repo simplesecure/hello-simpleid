@@ -249,6 +249,7 @@ class App extends React.Component {
 
   renderAccount()
   {
+    const userData = simple.getUserData()
     return (
       <div className="page">
         <div className="page-section">
@@ -349,7 +350,7 @@ class App extends React.Component {
                 <Row>
                   <Col>
                     <Card border="warning">
-                      <Card.Header>Bitcoin Wallet Address: TODO</Card.Header>
+                      <Card.Header>Bitcoin Wallet Address: {userData.wallet.btcAddr}</Card.Header>
                       <Card.Body>
                         <Card.Text>
                           Some quick example text to build on the card title and make up the bulk
@@ -360,7 +361,7 @@ class App extends React.Component {
                   </Col>
                   <Col>
                     <Card border="primary">
-                      <Card.Header>Ethereum Wallet Address: TODO</Card.Header>
+                      <Card.Header>Ethereum Wallet Address: {userData.wallet.ethAddr}</Card.Header>
                       <Card.Body>
                         <Card.Text>
                           Some quick example text to build on the card title and make up the bulk
@@ -371,7 +372,7 @@ class App extends React.Component {
                   </Col>
                   <Col>
                     <Card border="info">
-                      <Card.Header>Blockstack Wallet Address: TODO</Card.Header>
+                      <Card.Header>Blockstack Wallet Address: {userData.wallet.stkAddr}</Card.Header>
                       <Card.Body>
                         <Card.Text>
                           Some quick example text to build on the card title and make up the bulk
@@ -425,7 +426,7 @@ class App extends React.Component {
     console.log(userSession)
     console.log()
     if (userSession.isUserSignedIn()) {
-      console.log('userData:')
+      console.log('uPDURE:')
       const ud = userSession.loadUserData()
       console.log(ud)
       console.log()

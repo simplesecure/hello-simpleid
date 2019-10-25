@@ -8,7 +8,7 @@ export default class SectionTwo extends React.Component {
   render() {
     const { sectionsUnlocked } = this.global;
     return(
-      <div>
+      <div id="section-two" className="page-section">
         <Card>
           <Card.Header as="h5">Bip39 master keychain and security</Card.Header>
           <Card.Body>

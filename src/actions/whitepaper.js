@@ -58,8 +58,9 @@ export async function unlockNextSection(sectionsUnlocked) {
 
 export async function approveTransaction(e) {
   e.preventDefault();
-  const { simple, code } = getGlobal();
+  const { simple, code, pageStates } = getGlobal();
 
+  setGlobal({ uiState: pageStates.PENDING });
   const params = {
     email: simple.getUserData().email, 
     contractTx: true, 
@@ -80,6 +81,7 @@ export async function pollForStatus(tx) {
   const status = await simple.pollForStatus(tx);
   console.log(status);
   if(status !== "Mined") {
+    setGlobal({ uiState: pageStates.PENDING });
     pollForStatus(tx);
   } else {
     setGlobal({ uiState: pageStates.SIGNED_IN });

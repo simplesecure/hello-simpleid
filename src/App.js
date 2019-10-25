@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { setGlobal } from 'reactn';
+import Whitepaper from './containers/Whitepaper';
+import Banner from './components/Banner';
+import Auth from './containers/Auth';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends React.Component {
+  async componentDidMount() {
+    const { simple } = this.global;
+    const isSignedIn = simple.getUserData() ? true :  false;
+    if(isSignedIn) {
+      const provider = simple.simpleWeb3().getDefaultProvider('ropsten');
+      const address = simple.getUserData().wallet.ethAddr;
+      setGlobal({ address });
+
+      const balance = await provider.getBalance(address);
+      const etherBal = simple.simpleWeb3().utils.formatEther(balance);
+      setGlobal({ balance: etherBal });
+    }
+  }
+
+  render() {
+    const { userSession } = this.global;
+    return (
+      <div>
+        <Banner />
+        {
+          userSession.isUserSignedIn() ? 
+          <Whitepaper /> : 
+          <Auth />
+        }
+      </div>
+    )
+  }
 }
-
-export default App;

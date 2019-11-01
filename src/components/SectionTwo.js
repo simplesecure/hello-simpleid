@@ -1,42 +1,34 @@
 import React from 'reactn';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
 
 export default class SectionTwo extends React.Component {
 
   render() {
-    const { sectionsUnlocked } = this.global;
     return(
-      <div id="section-two" className="page-section">
-        <Card>
-          <Card.Header as="h5">Bip39 master keychain and security</Card.Header>
-          <Card.Body>
-            <Card.Title>We use Shamir Secret Sharing to split your master keychain into 3 pieces</Card.Title>
-            <br/>
-            <h6>
-              The three shares can be stored by <i>the user, the enterprise, and a trusted 3rd party</i>. The master keychain is only available when 2 of 3 parties approve,
-              thus avoiding chances of a single bad actor.
-            </h6>
-            <br/>
-            <Alert variant="danger"><i>Complete: robust pipe raise illness symptom crowd trip will slow assault recipe oven</i></Alert>
-            <br/>
-            <Card.Text>
-              <il>
-                <Alert variant="secondary"><b>Share 1: </b>robust ____ raise _______ symptom crowd ____ will slow assault recipe ____</Alert>
-              </il>
-              <il>
-                <Alert variant="secondary"><b>Share 2: </b>robust pipe _____ illness symptom _____ trip will slow _______ ______ oven</Alert>
-              </il>
-              <il>
-                <Alert variant="secondary"><b>Share 3: </b>______ pipe raise illness _______ crowd trip ____ ____ assault recipe oven</Alert>
-              </il>
-            </Card.Text>
-            <Button variant="primary" href="https://wiki.trezor.io/Shamir_Backup#What_happens_if_some_of_the_shares_get_lost_or_stolen.3F" target="_blank">Learn More</Button>
-            <Button href={sectionsUnlocked < 3 ? "#unlock-section" : "#section-three"} variant="secondary">Next Section</Button>
-          </Card.Body>
-        </Card>
-      </div>
+      <article id="section-two">
+        <p><strong>Web 3.0</strong></p>
+        <p>
+        What is Web 3.0? There is no truly official definition, but it is essentially the next iteration of the World Wide Web in which the biggest change is that users 
+        will have control over their private data and will no longer have to rely on third-party companies to execute computations via the web. “Execute computations” can 
+        mean literally anything that’s possible on the web today and the web of the future. 
+        </p>
+        <p>
+        Web 3.0 is made up of blockchain technology and distributed systems. The two are often used synonymously, but they are different. Peer-to-peer technology has been 
+        around for decades <a href="#footnote-4">[4]</a>, while blockchain as we know it has only been around for about 10 years <a href="#footnote-5">[5]</a>. These two types of systems can often overlap in 
+        the problems they solve, but they also diverge quite frequently. It is possible for a peer-to-peer technology to be intentionally ephemeral, whereas blockchain technology 
+        is designed to be a permanent record available to anyone. Consider the Bitcoin blockchain ledger versus Bittorrent. The former has a history of transactions dating all 
+        the way back to when the blockchain was launched. The latter will only have copies of data as long as the network is currently sharing copies of that specific piece of data.
+        </p>
+        <p>
+        The technologies used to build Web 3.0 applications today all have shared problems, even if the technologies themselves differ. Those problems include poor user experience, 
+        poor documentation, frequent breaking changes, and (surprisingly) poor security <a href="#footnote-6">[6]</a>. It is for these reasons that enterprise have turned to private blockchains and 
+        individual developer simply return to building Web 2.0 cloud applications. Private blockchains can offer a significantly better user experience, are generally well-vetted when 
+        it comes to security, and are fast <a href="#footnote-7">[7]</a>. But, they break many of the principles of Web 3.0. They are not publicly auditable, control is often totally centralized, and 
+        the code itself is often not open source. 
+        </p>
+        <p>
+        The fact that enterprises even consider private blockchains highlight the flaws in Web 3.0’s market strategy, but we will explore those further. 
+        </p>
+      </article>
     )
   }
 }

@@ -1,5 +1,4 @@
 import React, { setGlobal } from 'reactn';
-import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import BarLoader from 'react-spinners/BarLoader';
@@ -11,11 +10,12 @@ export default class UnlockSection extends React.Component {
     const { uiState, pageStates, sectionsUnlocked } = this.global;
 
     return (
-      <div id="unlock-section" className="page-section">
-        <Card>
-          <Card.Header as="h5">Unlock the next section by sending a smart contract transaction</Card.Header>
-          <Card.Body>
-            <Card.Text>Each section of the whitepaper is locked via smart contract. By sending a transaction to the contract, you can unlock the next section.</Card.Text>
+      <article id="unlock-section">
+        <hr />
+        <div>
+          <h5>Unlock the next section by sending a smart contract transaction</h5>
+          <div>
+            <p>Each section of the whitepaper is locked via smart contract. By sending a transaction to the contract, you can unlock the next section.</p>
             {
               uiState === pageStates.CODE_AUTH ? 
               <Form>
@@ -28,18 +28,20 @@ export default class UnlockSection extends React.Component {
                 </Button>
               </Form>
               : uiState === pageStates.PENDING ? 
-              <BarLoader
-                sizeUnit={"px"}
-                height={5}
-                width={100}
-                color={'white'}
-                loading={true}
-              /> : 
+              <div className="text-center">
+                <BarLoader
+                  sizeUnit={"px"}
+                  height={5}
+                  width={100}
+                  color={'#2568EF'}
+                  loading={true}
+                />
+              </div> : 
               <Button onClick={() => unlockNextSection(sectionsUnlocked)} variant="primary">Unlock Next Section</Button>
             }            
-          </Card.Body>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </article>
     )
   }
 }

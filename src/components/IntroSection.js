@@ -1,6 +1,4 @@
 import React from 'reactn';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
 export default class IntroSection extends React.Component {
   constructor(props) {
@@ -10,7 +8,6 @@ export default class IntroSection extends React.Component {
     }
   }
   render() {
-    const { modalOpen } = this.state;
 
     return (
       <article id="pre-section" className="article">
@@ -20,27 +17,6 @@ export default class IntroSection extends React.Component {
           <p>Justin Hunter</p>
           <p>Prabhaav Bhardwaj</p>
           <p>Alex Carreira</p>
-          <span onClick={() => this.setState({ modalOpen: true })} className="whitepaper-how">How does this white paper work?</span>
-          <Modal show={modalOpen} onHide={() => this.setState({ modalOpen: false })}>
-            <Modal.Header closeButton>
-              <Modal.Title>A White Paper Experience</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p>
-              Unlike other white papers, we have written and designed this white paper to be interactive. As you read the paper, you will be asked to experience SimpleID's offering to unlock additional sections of the paper.
-              All sections unlocked are tracked via a smart contract. We have ensured that all transactions are gas-less for you to make the experience easy, something we make easy for enterprises and developers to enable for 
-              their end-users.  
-              </p>
-              <p>
-                You will see a "User Info" button that will reveal you wallet information, show you how your encryption key looks, and let you experiment with buying crytocurreny in-app (with a fake credit card and on testnet, of course).
-              </p>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => this.setState({ modalOpen: false })}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal>
         </div>
         
         <h3 className="h2">Abstract</h3>

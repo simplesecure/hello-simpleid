@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import EtherInfo from './EtherInfo';
 import Alert from 'react-bootstrap/Alert';
+import Accordion from 'react-bootstrap/Accordion';
 
 export default class SectionMap extends React.Component {
   constructor(props) {
@@ -28,58 +29,70 @@ export default class SectionMap extends React.Component {
     return <Button onClick={() => this.setState({show: true})}>Show My Private Key</Button>;
   }
 
+  buyEther = () => {
+    const { address, simple } = this.global;
+    this.setState({ modalOpen: false })
+    simple.buyCrypto({env: "test", currency: "ETH", address, method: "debitcard", redirectUrl: window.location.origin, baseCurrency: "USD", email: simple.getUserData().email })
+  }
+
   render() {
     const { modalOpen } = this.state;
     const { sectionsUnlocked, simple } = this.global;
     const userData = simple.getUserData();
+
     const sections = [
       {
         title: "Introduction", 
-        href: "#section-one"
-      }, 
-      {
-        title: "Web 3.0", 
-        href: "#section-two"
-      }, 
-      {
-        title: "Market Strategy Flaws", 
-        href: "#section-three"
-      }, 
-      {
-        title: "Ending the Conenvience Tradeoff", 
-        href: "#section-four"
-      }, 
-      {
-        title: "Metting People Where They Are", 
-        href: "#section-five"
+        href: "#section-one", 
+        subSections: [
+          {
+            title: "Web 3.0", 
+            href: "#section-two"
+          }, 
+          {
+            title: "Market Strategy Flaws", 
+            href: "#section-three"
+          }, 
+          {
+            title: "Ending the Conenvience Tradeoff", 
+            href: "#section-four"
+          }, 
+          {
+            title: "Meeting People Where They Are", 
+            href: "#section-five"
+          }
+        ]
       }, 
       {
         title: "The Solution", 
-        href: "#section-six"
-      }, 
-      {
-        title: "Authentication", 
-        href: "#section-seven"
-      }, 
-      {
-        title: "Wallet Management", 
-        href: "#section-eight"
-      }, 
-      {
-        title: "Blockchain Transactions", 
-        href: "#section-nine"
-      },
-      {
-        title: "Data Storage", 
-        href: "#section-ten"
-      },
-      {
-        title: "Security & Convenience", 
-        href: "#section-eleven"
+        href: "#section-six", 
+        subSections: [
+          {
+            title: "Authentication", 
+            href: "#section-seven"
+          }, 
+          {
+            title: "Wallet Management", 
+            href: "#section-eight"
+          }, 
+          {
+            title: "Blockchain Transactions", 
+            href: "#section-nine"
+          },
+          {
+            title: "Data Storage", 
+            href: "#section-ten"
+          },
+          {
+            title: "Security & Convenience", 
+            href: "#section-eleven"
+          }
+        ]
       }, 
       {
         title: "Conclusion", 
-        href: "#section-twelve"
+        href: "#section-twelve", 
+        subSections: []
       }
     ]
 
@@ -141,7 +154,9 @@ export default class SectionMap extends React.Component {
                 </div>
               </div>
               <p>Let's focus on your Ethereum wallet as a more detailed example. You can see your wallet balance below, and if you haven't yet, you can experiment with purchasing some Ether (testnet) with a credit card (a test one, of course).</p>
-              <EtherInfo />
+              <EtherInfo 
+                buyEther={this.buyEther}
+              />
               <p>
                 Each time you sign in, an application-specific encryption keypair is derived and sent back to the application. This 
                 makes it so that data for this application can be stored, encrypted, with a key specific to you and specific to this 
@@ -158,29 +173,46 @@ export default class SectionMap extends React.Component {
           { 
             availableSections.length > 0 ? 
             <ul className="list-group pr-xl-4"> 
+            <Accordion>
             {
               availableSections.map((sec) => {
                 return (
-                  <li key={sec.title} className="list-group-item px-4 py-3 d-flex justify-content-between">
-                    <a href={sec.href}><h6 className="mb-0 link-color">{sec.title}</h6></a>
-                  </li>
+                  
+                    <li className="list-group-item main-list-item justify-content-between">
+                      <Accordion.Toggle href={sec.href} as={"a"} variant="link" eventKey={availableSections.map(a => a.title).indexOf(sec.title).toString()}>
+                        <h6 className="mb-0 link-color">{sec.title} <img className="icon primary icon-sm down-caret" src={require("../assets/img/icons/theme/navigation/angle-down.svg")} alt="Icon" /></h6>
+                      </Accordion.Toggle>
+                      <Accordion.Collapse eventKey={availableSections.map(a => a.title).indexOf(sec.title).toString()}>
+                        <ul className="list-group sub-list">
+                          {
+                            sec.subSections.map((subSec) => {
+                              return (
+                                <li className="nested-list-item" key={subSec.title}><a href={subSec.href}>{subSec.title}</a></li>
+                              )
+                            })
+                          }
+                        </ul>
+                      </Accordion.Collapse>
+                    </li>
                 )
               }) 
             }
+             
             {
               availableSections.length < sections.length ? 
-              <li className="list-group-item px-4 py-3 d-flex justify-content-between">
-                <a href="/#unlock-section"><h6 className="mb-0 link-color">Unlock Each Section For More</h6></a>
+              <li className="list-group-item main-list-item justify-content-between">
+                <a href="/#unlock-section"><h6 className="mb-0 link-color">Unlock Next Section</h6></a>
               </li> : 
               <span/>
             }
+            </Accordion>
             </ul> : 
             <ul className="list-group pr-xl-4">
-              <li className="list-group-item px-4 py-3 d-flex justify-content-between">
-                <a href="/#pre-section"><h6 className="mb-0 link-color">Absrtract</h6></a>
+              <li className="list-group-item main-list-item justify-content-between">
+                <a href="/#pre-section"><h6 className="mb-0 link-color">Abstract</h6></a>
               </li>
-              <li className="list-group-item px-4 py-3 d-flex justify-content-between">
-                <a href="/#unlock-section"><h6 className="mb-0 link-color">Unlock Each Section For More</h6></a>
+              <li className="list-group-item main-list-item justify-content-between">
+                <a href="/#unlock-section"><h6 className="mb-0 link-color">Unlock Next Section</h6></a>
               </li>
             </ul>
           }

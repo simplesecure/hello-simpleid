@@ -1,8 +1,13 @@
+@import url('https://fonts.googleapis.com/css?family=Jomolhari&display=swap');
 body {
   height: 100vh;
   width: 100vw;
   min-width: 320px;
   margin: 0px;
+}
+
+article p {
+  font-family: 'Jomolhari', serif!important;
 }
 
 .wrapper {
@@ -69,7 +74,7 @@ body {
 }
 
 .whitepaper-how {
-  font-size: 12px;
+  font-size: 18px;
   color: #2568EF;
   cursor: pointer;
 }
@@ -90,7 +95,36 @@ body {
   margin-top: 35px;
 }
 
+.margin-left-8 {
+  margin-left: 8px;
+}
+
 .loader-sign-in {
   max-width: 85%;
   margin: auto;
 }
+
+.footnote-list {
+  list-style: none;
+}
+
+.footnote-list li {
+  font-size: 12px;
+  margin: 10px;
+}
+
+.sub-list {
+  list-style: none;
+}
+
+.nested-list-item {
+  font-size: 14px;
+  margin-top: 10px;
+  margin-left: 5px;
+}
+
+.main-list-item a h6 {
+  font-size: 17px!important;
+}
+
+

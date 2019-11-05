@@ -14,9 +14,6 @@ export default class SectionEleven extends React.Component {
           and we have partners with others to ensure our security is always top of mind. 
         </p>
         <p>
-          DIAGRAM HERE
-        </p>
-        <p>
           The overall architecture of the SimpleID solution is designed to minimize the surface area of vulnerabilities. It is also designed to be flexible in adding modules, removing modules, and changing the security properties. 
         </p>
         <p>

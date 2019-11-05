@@ -7,7 +7,7 @@ import { unlockNextSection, approveTransaction } from '../actions/whitepaper';
 export default class UnlockSection extends React.Component {
 
   render() {
-    const { uiState, pageStates, sectionsUnlocked } = this.global;
+    const { uiState, pageStates, sectionsUnlocked, contractAddress } = this.global;
 
     return (
       <article id="unlock-section">
@@ -37,7 +37,10 @@ export default class UnlockSection extends React.Component {
                   loading={true}
                 />
               </div> : 
-              <Button onClick={() => unlockNextSection(sectionsUnlocked)} variant="primary">Unlock Next Section</Button>
+              <div>
+                <Button onClick={() => unlockNextSection(sectionsUnlocked)} variant="primary">Unlock Next Section</Button>
+                <Button href={`https://explorer.testnet2.matic.network/address/${contractAddress}/transactions`} target="_blank" rel="noreferrer noopener" className="margin-left-8" variant="outline-primary">View This Contract</Button>
+              </div>
             }            
           </div>
         </div>

@@ -7,7 +7,7 @@ import SimpleID from 'simpleid-js-sdk';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './theme.css';
 import './styles.css';
-const CONTRACT_ADDRESS = "0xd6f057E72DF0ca2649876Dd7EDbcEBBFa4303807";
+const CONTRACT_ADDRESS = "0x9350a73ff1c881fae4b440b59ed47fa15890f815";
 const network = "layer2";
 const simple = new SimpleID({
   appOrigin: "https://www.simpleid.xyz/whitepaper",

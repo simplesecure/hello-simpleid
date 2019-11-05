@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col';
 export default class EtherInfo extends React.Component {
   
   render() {
-    const { address, balance, simple } = this.global;
+    const { address, balance } = this.global;
     
     return (
       <div id="pre-section">
@@ -39,7 +39,7 @@ export default class EtherInfo extends React.Component {
               <Col sm={12}>
                 <div>
                   <div>
-                    <Button onClick={() => simple.buyCrypto({env: "test", currency: "ETH", address, method: "debitcard", redirectUrl: window.location.origin, baseCurrency: "USD", email: simple.getUserData().email })} id="buy" variant="primary">Buy Ether</Button>
+                    <Button onClick={this.props.buyEther} id="buy" variant="primary">Buy Ether</Button>
                     <p>Note: Test transactions only, no real credit card information needed. Use the following credit card information to make a test purchase:</p>
                     <p>Number: <code>4000023104662535</code></p>
                     <p>Expiration: <code>12/2020</code></p>

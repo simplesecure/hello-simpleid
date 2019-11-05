@@ -1,0 +1,82 @@
+[
+  {
+    "number": "1", 
+    "content": "There is some evidence to suggest that Henry Ford never actually uttered the famous quote, but it's a good one and we're using it.", 
+    "link": "https://hbr.org/2011/08/henry-ford-never-said-the-fast"
+  }, 
+  {
+    "number": "2", 
+    "content": "The Bitcoin white paper was very much focused on the centralization monetary policy and how a p2p digital cash system could supplant that.", 
+    "link": "https://bitcoin.org/bitcoin.pdf"
+  }, 
+  {
+    "number": "3", 
+    "content": "As a simple exaple, Web3.js has had over 4800 commits on its current default branch.", 
+    "link": "https://github.com/ethereum/web3.js"
+  }, 
+  {
+    "number": "4", 
+    "content": "BitTorrent was created in 2001 and grew to be one of the most popular file sharing protocols. It is still used today.", 
+    "link": "https://en.wikipedia.org/wiki/BitTorrent"
+  }, 
+  {
+    "number": "5", 
+    "content": "Bitcoin was the first blockchain protocol, followed shortly by Ethereum. They remain the top blockchains today.", 
+    "link": "https://hbr.org/2017/02/a-brief-history-of-blockchain"
+  }, 
+  {
+    "number": "6", 
+    "content": "Perhaps the most famous instance or poor security around the blockchain-based web was the Mt. Gox hack in 2014 that resulted in $460 million in lost funds.",
+    "link": "https://www.wired.com/2014/03/bitcoin-exchange/"
+  }, 
+  {
+    "number": "7", 
+    "content": "Permissioned blockchains, because of the limited access, are inherently faster. They also use different consensus algorithms that can result in faster speeds.", 
+    "link": "https://www.investopedia.com/news/public-private-permissioned-blockchains-compared/"  
+  }, 
+  {
+    "number": "8", 
+    "content": "Password managers have helped, but not many people use them relative to the total population of web users. So, people are left with the cognitive load of trying to remember dozens of passwords. Memorability of passwords has never truly been implemented.", 
+    "link": "https://www.sciencedaily.com/releases/2018/09/180906082024.htm"
+  }, 
+  {
+    "number": "9", 
+    "content": "Since 2011, Time-based One Time Passwords have been standardized around best practices and with security at the forefront.", 
+    "link": "https://tools.ietf.org/html/rfc6238"
+  }, 
+  {
+    "number": "10", 
+    "content": "Hot wallets have signficant benefits but come with risks. Those risks are mitigated through SimpleID's implementation.", 
+    "link": "https://markshirecrypto.com/cryptocurrency-wallet/cryptocurrency-hot-wallet/what-is-a-hot-wallet/"
+  }, 
+  {
+    "number": "11", 
+    "content": "Multi-factor authentication is one of the major ways Coinbase, which has never been hacked, ensures security if its customers.", 
+    "link": "https://blog.coinbase.com/securing-your-crypto-with-security-keys-and-webauthn-551124b72d8e"
+  }, 
+  {
+    "number": "12", 
+    "content": "Rotating encryption keys is the process by which a user generates a new encryption key pair then invalidates all prior data encrypted with the old key by re-encrypting that data with their new key.", 
+    "link": "https://www.quora.com/What-is-encryption-key-rotation"
+  }, 
+  {
+    "number": "13", 
+    "content": "Simply put, the Gas Station Network allows developers to subsidize the gas fees for their users. Rather than an end-user having to pay a gas fee, the application covers that through a special type of smart contract.", 
+    "link": "https://eips.ethereum.org/EIPS/eip-1613"
+  }, 
+  {
+    "number": "14", 
+    "content": "Layer 2 is simply a settlement layer that sits on top of a blockchain and eventually broadcasts transactions on chain. Layer 1 (the blockchain) and layer 2 are eventually consistent, but they don't need to be in real-time.", 
+    "link": "https://medium.com/l4-media/making-sense-of-ethereums-layer-2-scaling-solutions-state-channels-plasma-and-truebit-22cb40dcc2f4"
+  }, 
+  {
+    "number": "15", 
+    "content": "IPFS (Inter-plantetary File System is a p2p storage network where individuals can host files shared by others.", 
+    "link": "https://docs.ipfs.io/introduction/overview/"
+  }, 
+  {
+    "number": "16", 
+    "content": "Hardware security modules ensure physical protection of things like digital keys.", 
+    "link": "https://en.wikipedia.org/wiki/Hardware_security_module"
+  }
+]

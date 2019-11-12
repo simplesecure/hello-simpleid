@@ -11,7 +11,7 @@ export default class SectionMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      modalOpen: false, 
+      modalOpen: true, 
       show: false
     }
   }

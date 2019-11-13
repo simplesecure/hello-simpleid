@@ -39,59 +39,60 @@ export default class SectionMap extends React.Component {
     const { modalOpen } = this.state;
     const { sectionsUnlocked, simple } = this.global;
     const userData = simple.getUserData();
+    const path = process.env.NODE_ENV === "production" ? "https://simpleid.xyz/demo" : window.location.origin;
 
     const sections = [
       {
         title: "Introduction", 
-        href: "#section-one", 
+        href: `${path}#section-one`, 
         subSections: [
           {
             title: "Web 3.0", 
-            href: "#section-two"
+            href: `${path}#section-two`
           }, 
           {
             title: "Market Strategy Flaws", 
-            href: "#section-three"
+            href: `${path}#section-three`
           }, 
           {
             title: "Ending the Conenvience Tradeoff", 
-            href: "#section-four"
+            href: `${path}#section-four`
           }, 
           {
             title: "Meeting People Where They Are", 
-            href: "#section-five"
+            href: `${path}#section-five`
           }
         ]
       }, 
       {
         title: "The Solution", 
-        href: "#section-six", 
+        href: `${path}#section-six`, 
         subSections: [
           {
             title: "Authentication", 
-            href: "#section-seven"
+            href: `${path}#section-seven`
           }, 
           {
             title: "Wallet Management", 
-            href: "#section-eight"
+            href: `${path}#section-eight`
           }, 
           {
             title: "Blockchain Transactions", 
-            href: "#section-nine"
+            href: `${path}#section-nine`
           },
           {
             title: "Data Storage", 
-            href: "#section-ten"
+            href: `${path}#section-ten`
           },
           {
             title: "Security & Convenience", 
-            href: "#section-eleven"
+            href: `${path}#section-eleven`
           }
         ]
       }, 
       {
         title: "Conclusion", 
-        href: "#section-twelve", 
+        href: `${path}#section-twelve`, 
         subSections: []
       }
     ]

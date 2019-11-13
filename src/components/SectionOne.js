@@ -12,7 +12,7 @@ export default class SectionOne extends React.Component {
         <article id="section-one">
           <h3 className="h2">How It Works</h3>
           <p>
-            <img class="img-fluid" src={require('../assets/img/diagram1.svg')} />
+            <img class="img-fluid" src={require('../assets/img/diagram1.svg')} alt="diagram" />
           </p>
           <p>
           There are two main problems enterprises and developers face when building a Web 3.0 business or application today:
